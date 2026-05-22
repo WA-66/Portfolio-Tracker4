@@ -672,6 +672,25 @@
       40%, 60% { transform: translateX(8px); }
     }
 
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed; bottom: 20px; left: 20px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, #10B981, #047857);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+      opacity: 0; pointer-events: none;
+      transform: translateY(12px) scale(0.9);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 90;
+    }
+    .scroll-top.visible {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    .scroll-top:active { transform: scale(0.92); }
+
     /* === FOOTER === */
     footer {
       max-width: 1280px; margin: 0 auto;
@@ -820,6 +839,10 @@
   <p>البيانات من <span id="source-label" class="ltr">Yahoo Finance</span> · قد تتأخر 15 دقيقة بدون مفتاح Finnhub</p>
 </footer>
 
+<button id="scroll-top" class="scroll-top" title="للأعلى" aria-label="العودة للأعلى">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
 <script>
 'use strict';
 
@@ -846,6 +869,7 @@ const state = {
   apiKey: '',
   error: null,
   marketStatus: 'checking',
+  marketUntil: 0,
   expandedStock: null,
   showSettings: false,
   // History
@@ -1179,32 +1203,62 @@ async function refreshPrices() {
   }
   state.loading = false;
 
-  // Market session — use Yahoo's marketState if available, else compute from time
+  // Market session — DST-safe via America/New_York timezone
+  const sess = getMarketSession();
+  state.marketStatus = sess.session;
+  state.marketUntil = sess.untilMin;
+
+  // If Yahoo explicitly reports a state, trust it (it also knows holidays)
   const states = Object.values(newPrices).map(p => p.marketState).filter(Boolean);
   if (states.length > 0) {
-    // Most common reported state
     const counts = {};
     states.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
     const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
     if (top === 'REGULAR') state.marketStatus = 'open';
     else if (top === 'PRE' || top === 'PREPRE') state.marketStatus = 'pre';
     else if (top === 'POST' || top === 'POSTPOST') state.marketStatus = 'post';
-    else state.marketStatus = 'closed';
-  } else {
-    // Fallback: US Eastern time windows (UTC) — approximate
-    const now = new Date();
-    const m = now.getUTCHours() * 60 + now.getUTCMinutes();
-    const day = now.getUTCDay();
-    const weekday = day >= 1 && day <= 5;
-    if (!weekday) state.marketStatus = 'closed';
-    else if (m >= 14 * 60 + 30 && m <= 21 * 60) state.marketStatus = 'open';
-    else if (m >= 9 * 60 && m < 14 * 60 + 30) state.marketStatus = 'pre';
-    else if (m > 21 * 60 && m <= 24 * 60) state.marketStatus = 'post';
-    else state.marketStatus = 'closed';
+    else if (top === 'CLOSED') state.marketStatus = 'closed';
   }
 
   render();
 }
+
+// Returns the current US market session using America/New_York time (handles DST automatically)
+function getMarketSession() {
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false,
+  }).formatToParts(now);
+  let h = 0, m = 0, wd = '';
+  parts.forEach(p => {
+    if (p.type === 'hour') h = parseInt(p.value, 10) % 24;
+    if (p.type === 'minute') m = parseInt(p.value, 10);
+    if (p.type === 'weekday') wd = p.value;
+  });
+  const mins = h * 60 + m;
+  const isWeekday = !['Sat', 'Sun'].includes(wd);
+
+  const PRE_START = 4 * 60;        // 4:00 AM ET
+  const REG_START = 9 * 60 + 30;   // 9:30 AM ET
+  const REG_END = 16 * 60;         // 4:00 PM ET
+  const POST_END = 20 * 60;        // 8:00 PM ET
+
+  if (!isWeekday) return { session: 'closed', untilMin: 0 };
+  if (mins >= REG_START && mins < REG_END) return { session: 'open', untilMin: REG_END - mins };
+  if (mins >= PRE_START && mins < REG_START) return { session: 'pre', untilMin: REG_START - mins };
+  if (mins >= REG_END && mins < POST_END) return { session: 'post', untilMin: POST_END - mins };
+  return { session: 'closed', untilMin: 0 };
+}
+
+function fmtCountdown(mins) {
+  if (!mins || mins <= 0) return '';
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')} ساعة`;
+  return `${m} دقيقة`;
+}
+
 
 // ============ COMPUTE ============
 function getPortfolioData() {
@@ -1316,19 +1370,23 @@ function renderHeader() {
     livePill.classList.remove('pill-live');
   }
 
-  // Market pill — 4 sessions
+  // Market pill — 4 sessions with countdown
   const marketPill = document.getElementById('market-pill');
+  const cd = fmtCountdown(state.marketUntil);
   if (state.marketStatus === 'open') {
-    marketPill.textContent = '🟢 السوق مفتوح';
+    marketPill.textContent = cd ? `🟢 السوق مفتوح · يغلق خلال ${cd}` : '🟢 السوق مفتوح';
     marketPill.className = 'pill pill-live';
+    marketPill.style.background = '';
+    marketPill.style.color = '';
+    marketPill.style.borderColor = '';
   } else if (state.marketStatus === 'pre') {
-    marketPill.textContent = '🌅 قبل الافتتاح';
+    marketPill.textContent = cd ? `🌅 قبل الافتتاح · يفتح خلال ${cd}` : '🌅 قبل الافتتاح';
     marketPill.className = 'pill';
     marketPill.style.background = 'rgba(251,191,36,0.12)';
     marketPill.style.color = '#FBBF24';
     marketPill.style.borderColor = 'rgba(251,191,36,0.3)';
   } else if (state.marketStatus === 'post') {
-    marketPill.textContent = '🌙 بعد الإغلاق';
+    marketPill.textContent = cd ? `🌙 بعد الإغلاق · ينتهي خلال ${cd}` : '🌙 بعد الإغلاق';
     marketPill.className = 'pill';
     marketPill.style.background = 'rgba(167,139,250,0.12)';
     marketPill.style.color = '#A78BFA';
@@ -2424,6 +2482,26 @@ function setupLockScreen() {
 // ============ INIT ============
 applyTheme();
 setupLockScreen();
+
+// Scroll-to-top button
+(function () {
+  const btn = document.getElementById('scroll-top');
+  if (btn) {
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > 350);
+    }, { passive: true });
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+})();
+
+// Set market session immediately so the header is correct before first fetch
+(function () {
+  const s = getMarketSession();
+  state.marketStatus = s.session;
+  state.marketUntil = s.untilMin;
+})();
 render();
 refreshPrices();
 setInterval(refreshPrices, REFRESH_MS);
