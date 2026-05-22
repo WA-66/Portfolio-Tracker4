@@ -801,9 +801,9 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       الأداء
     </button>
-    <button class="tab" data-tab="history">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      تاريخي
+    <button class="tab" data-tab="sp500">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      S&amp;P 500
     </button>
     <button class="tab" data-tab="news">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
@@ -933,22 +933,45 @@ function applyTheme() {
 
 // ============ API ============
 async function fetchYahoo(symbol) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=5d`;
+  // includePrePost=true gives pre-market and after-hours data points
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=5m&range=1d&includePrePost=true`;
   const proxies = [
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
   ];
   for (const p of proxies) {
     try {
       const res = await fetch(p);
       if (!res.ok) continue;
       const data = await res.json();
-      const meta = data?.chart?.result?.[0]?.meta;
+      const r = data?.chart?.result?.[0];
+      const meta = r?.meta;
       if (!meta?.regularMarketPrice) continue;
+
+      const regularPrice = meta.regularMarketPrice;
+      const prevClose = meta.chartPreviousClose ?? meta.previousClose ?? regularPrice;
+      const marketState = (meta.marketState || '').toUpperCase();
+
+      // Find the absolute latest traded price (includes pre/post market)
+      let latestPrice = regularPrice;
+      const closes = r?.indicators?.quote?.[0]?.close;
+      if (Array.isArray(closes)) {
+        for (let i = closes.length - 1; i >= 0; i--) {
+          if (closes[i] != null && !isNaN(closes[i])) { latestPrice = closes[i]; break; }
+        }
+      }
+      // Prefer explicit pre/post fields from meta when present
+      if (meta.postMarketPrice != null) latestPrice = meta.postMarketPrice;
+      else if (meta.preMarketPrice != null && (marketState === 'PRE' || marketState === 'PREPRE')) latestPrice = meta.preMarketPrice;
+
       return {
-        price: meta.regularMarketPrice,
-        prevClose: meta.chartPreviousClose,
-        change: meta.regularMarketPrice - meta.chartPreviousClose,
+        price: regularPrice,                       // regular-session price
+        latestPrice: latestPrice,                  // latest incl. extended hours
+        prevClose: prevClose,
+        change: regularPrice - prevClose,          // regular-session day change
+        extendedChange: latestPrice - regularPrice,// movement during pre/post
+        marketState: marketState,
       };
     } catch (e) { /* try next */ }
   }
@@ -961,13 +984,16 @@ async function fetchFinnhub(symbol, key) {
     if (!res.ok) return null;
     const d = await res.json();
     if (!d.c) return null;
-    return { price: d.c, prevClose: d.pc, change: d.d };
+    return {
+      price: d.c, latestPrice: d.c, prevClose: d.pc,
+      change: d.d, extendedChange: 0, marketState: '',
+    };
   } catch { return null; }
 }
 
-// ============ HISTORICAL DATA ============
+// ============ HISTORICAL / INDEX DATA ============
 async function fetchHistorical(symbol, range = '1mo') {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=${range}`;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=${range}`;
   const proxies = [
     `https://corsproxy.io/?${encodeURIComponent(url)}`,
     `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
@@ -995,13 +1021,14 @@ async function fetchHistorical(symbol, range = '1mo') {
   return null;
 }
 
-async function loadHistory() {
+async function loadSP500() {
   if (state.historyLoading) return;
   state.historyLoading = true;
   state.historyError = null;
-  if (state.activeTab === 'history') render();
+  if (state.activeTab === 'sp500') render();
 
-  const symbols = [...HOLDINGS.map(h => h.symbol), 'SPY'];
+  // ^GSPC = actual S&P 500 index; also fetch holdings for the portfolio comparison
+  const symbols = [...HOLDINGS.map(h => h.symbol), '^GSPC'];
   const results = {};
 
   await Promise.all(symbols.map(async (sym) => {
@@ -1009,28 +1036,24 @@ async function loadHistory() {
     if (data && data.length > 0) results[sym] = data;
   }));
 
-  // Check if any stock data succeeded
-  const stocksWithData = HOLDINGS.filter(h => results[h.symbol]);
-  if (stocksWithData.length === 0) {
-    state.historyError = 'فشل تحميل البيانات التاريخية. خوادم البيانات قد تكون مشغولة.';
+  // The index itself is the priority
+  if (!results['^GSPC']) {
+    state.historyError = 'فشل تحميل بيانات مؤشر S&P 500. خوادم البيانات قد تكون مشغولة.';
     state.historyLoading = false;
-    if (state.activeTab === 'history') render();
+    if (state.activeTab === 'sp500') render();
     return;
   }
 
-  // Use date strings (YYYY-MM-DD) to avoid timestamp drift across symbols
   const toDateStr = (d) => d.toISOString().split('T')[0];
 
-  // Collect all unique trading dates
-  const dateSet = new Set();
-  HOLDINGS.forEach(h => {
-    if (results[h.symbol]) {
-      results[h.symbol].forEach(p => dateSet.add(toDateStr(p.date)));
-    }
-  });
-  const sortedDates = [...dateSet].sort();
+  // S&P 500 index series
+  const index = results['^GSPC'].map(p => ({
+    date: new Date(toDateStr(p.date) + 'T00:00:00'),
+    price: p.price,
+  }));
 
-  // Build price maps for fast lookup
+  // Build portfolio series (for the comparison overlay) aligned to index dates
+  const stocksWithData = HOLDINGS.filter(h => results[h.symbol]);
   const stockMaps = {};
   HOLDINGS.forEach(h => {
     if (results[h.symbol]) {
@@ -1038,42 +1061,27 @@ async function loadHistory() {
     }
   });
 
-  // Build portfolio timeseries with forward-fill for missing data points
   const lastPrices = {};
-  const portfolio = sortedDates.map(dateStr => {
+  const portfolio = index.map(pt => {
+    const dateStr = toDateStr(pt.date);
     let total = 0;
     HOLDINGS.forEach(h => {
-      const map = stockMaps[h.symbol];
-      const price = map?.get(dateStr) ?? lastPrices[h.symbol];
+      const price = stockMaps[h.symbol]?.get(dateStr) ?? lastPrices[h.symbol];
       if (price != null) {
         lastPrices[h.symbol] = price;
         total += h.shares * price;
       }
     });
-    return {
-      date: new Date(dateStr + 'T00:00:00'),
-      valueUSD: total,
-      valueSAR: total * USD_TO_SAR,
-    };
+    return { date: pt.date, valueUSD: total, valueSAR: total * USD_TO_SAR };
   }).filter(p => p.valueUSD > 0);
 
-  // Build SPY series aligned to same dates
-  const spy = [];
-  if (results.SPY) {
-    const spyMap = new Map(results.SPY.map(p => [toDateStr(p.date), p.price]));
-    let lastSpyPrice = null;
-    sortedDates.forEach(dateStr => {
-      const price = spyMap.get(dateStr) ?? lastSpyPrice;
-      if (price != null) {
-        lastSpyPrice = price;
-        spy.push({ date: new Date(dateStr + 'T00:00:00'), price });
-      }
-    });
-  }
-
-  state.historyData = { portfolio, spy, missingStocks: HOLDINGS.length - stocksWithData.length };
+  state.historyData = {
+    index,
+    portfolio,
+    missingStocks: HOLDINGS.length - stocksWithData.length,
+  };
   state.historyLoading = false;
-  if (state.activeTab === 'history') render();
+  if (state.activeTab === 'sp500') render();
 }
 
 // ============ NEWS ============
@@ -1152,9 +1160,11 @@ async function refreshPrices() {
   let successCount = 0;
 
   await Promise.all(HOLDINGS.map(async (h) => {
-    const result = state.apiKey
-      ? await fetchFinnhub(h.symbol, state.apiKey)
-      : await fetchYahoo(h.symbol);
+    // Yahoo first (gives pre-market & after-hours data); Finnhub as fallback
+    let result = await fetchYahoo(h.symbol);
+    if (!result && state.apiKey) {
+      result = await fetchFinnhub(h.symbol, state.apiKey);
+    }
     if (result) {
       newPrices[h.symbol] = result;
       successCount++;
@@ -1169,28 +1179,57 @@ async function refreshPrices() {
   }
   state.loading = false;
 
-  // Market status
-  const now = new Date();
-  const minutesUTC = now.getUTCHours() * 60 + now.getUTCMinutes();
-  const utcDay = now.getUTCDay();
-  state.marketStatus = (utcDay >= 1 && utcDay <= 5 && minutesUTC >= 14 * 60 + 30 && minutesUTC <= 21 * 60)
-    ? 'open' : 'closed';
+  // Market session — use Yahoo's marketState if available, else compute from time
+  const states = Object.values(newPrices).map(p => p.marketState).filter(Boolean);
+  if (states.length > 0) {
+    // Most common reported state
+    const counts = {};
+    states.forEach(s => { counts[s] = (counts[s] || 0) + 1; });
+    const top = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
+    if (top === 'REGULAR') state.marketStatus = 'open';
+    else if (top === 'PRE' || top === 'PREPRE') state.marketStatus = 'pre';
+    else if (top === 'POST' || top === 'POSTPOST') state.marketStatus = 'post';
+    else state.marketStatus = 'closed';
+  } else {
+    // Fallback: US Eastern time windows (UTC) — approximate
+    const now = new Date();
+    const m = now.getUTCHours() * 60 + now.getUTCMinutes();
+    const day = now.getUTCDay();
+    const weekday = day >= 1 && day <= 5;
+    if (!weekday) state.marketStatus = 'closed';
+    else if (m >= 14 * 60 + 30 && m <= 21 * 60) state.marketStatus = 'open';
+    else if (m >= 9 * 60 && m < 14 * 60 + 30) state.marketStatus = 'pre';
+    else if (m > 21 * 60 && m <= 24 * 60) state.marketStatus = 'post';
+    else state.marketStatus = 'closed';
+  }
 
   render();
 }
 
 // ============ COMPUTE ============
 function getPortfolioData() {
+  const session = state.marketStatus; // open | pre | post | closed
+  const extendedSession = session === 'pre' || session === 'post';
   return HOLDINGS.map(h => {
     const live = state.livePrices[h.symbol];
-    const currentPrice = live?.price;
+    // Use latest price (incl. extended hours) for valuation
+    const currentPrice = live ? (live.latestPrice ?? live.price) : null;
+    const regularPrice = live?.price ?? null;
     const currentValue = currentPrice ? currentPrice * h.shares : h.initialValueUSD;
     const profit = currentValue - h.costBasisUSD;
     const profitPct = (profit / h.costBasisUSD) * 100;
-    const dayChange = live?.change ? live.change * h.shares : 0;
+    // Day change = latest vs previous close (total move)
+    const dayChangePerShare = live ? ((currentPrice ?? regularPrice) - live.prevClose) : 0;
+    const dayChange = dayChangePerShare * h.shares;
+    // Extended-hours move (pre/post only)
+    const extChangePerShare = live?.extendedChange || 0;
+    const extChange = extChangePerShare * h.shares;
+    const extChangePct = (regularPrice && extChangePerShare)
+      ? (extChangePerShare / regularPrice) * 100 : 0;
     return {
       ...h,
       currentPrice,
+      regularPrice,
       currentValue,
       currentValueSAR: currentValue * USD_TO_SAR,
       costBasisSAR: h.costBasisUSD * USD_TO_SAR,
@@ -1199,6 +1238,10 @@ function getPortfolioData() {
       profitPct,
       dayChange,
       dayChangeSAR: dayChange * USD_TO_SAR,
+      extChange,
+      extChangeSAR: extChange * USD_TO_SAR,
+      extChangePct,
+      hasExtended: extendedSession && Math.abs(extChangePerShare) > 0.001,
       isLive: !!currentPrice,
     };
   });
@@ -1208,7 +1251,10 @@ function getTotals(data) {
   const value = data.reduce((s, h) => s + h.currentValue, 0);
   const cost = data.reduce((s, h) => s + h.costBasisUSD, 0);
   const dayChange = data.reduce((s, h) => s + h.dayChange, 0);
+  const extChange = data.reduce((s, h) => s + h.extChange, 0);
   const profit = value - cost;
+  // Regular-session portfolio value (excludes extended-hours move)
+  const regularValue = value - extChange;
   return {
     valueUSD: value, valueSAR: value * USD_TO_SAR,
     costUSD: cost, costSAR: cost * USD_TO_SAR,
@@ -1216,6 +1262,9 @@ function getTotals(data) {
     profitPct: cost > 0 ? (profit / cost) * 100 : 0,
     dayChangeUSD: dayChange, dayChangeSAR: dayChange * USD_TO_SAR,
     dayChangePct: value - dayChange > 0 ? (dayChange / (value - dayChange)) * 100 : 0,
+    extChangeUSD: extChange, extChangeSAR: extChange * USD_TO_SAR,
+    extChangePct: regularValue > 0 ? (extChange / regularValue) * 100 : 0,
+    hasExtended: data.some(h => h.hasExtended),
   };
 }
 
@@ -1267,14 +1316,29 @@ function renderHeader() {
     livePill.classList.remove('pill-live');
   }
 
-  // Market pill
+  // Market pill — 4 sessions
   const marketPill = document.getElementById('market-pill');
   if (state.marketStatus === 'open') {
     marketPill.textContent = '🟢 السوق مفتوح';
     marketPill.className = 'pill pill-live';
+  } else if (state.marketStatus === 'pre') {
+    marketPill.textContent = '🌅 قبل الافتتاح';
+    marketPill.className = 'pill';
+    marketPill.style.background = 'rgba(251,191,36,0.12)';
+    marketPill.style.color = '#FBBF24';
+    marketPill.style.borderColor = 'rgba(251,191,36,0.3)';
+  } else if (state.marketStatus === 'post') {
+    marketPill.textContent = '🌙 بعد الإغلاق';
+    marketPill.className = 'pill';
+    marketPill.style.background = 'rgba(167,139,250,0.12)';
+    marketPill.style.color = '#A78BFA';
+    marketPill.style.borderColor = 'rgba(167,139,250,0.3)';
   } else if (state.marketStatus === 'closed') {
     marketPill.textContent = '⚫ السوق مغلق';
     marketPill.className = 'pill pill-closed';
+    marketPill.style.background = '';
+    marketPill.style.color = '';
+    marketPill.style.borderColor = '';
   } else {
     marketPill.className = 'pill hidden';
   }
@@ -1316,6 +1380,26 @@ function renderHero(totals, isProfit, isDayUp) {
       </div>`
     : '';
 
+  // Extended-hours banner (pre-market / after-hours)
+  let extBanner = '';
+  if (totals.hasExtended && Math.abs(totals.extChangeUSD) > 0.01) {
+    const extUp = totals.extChangeUSD >= 0;
+    const isPre = state.marketStatus === 'pre';
+    const label = isPre ? 'قبل الافتتاح' : 'بعد الإغلاق';
+    const icon = isPre ? '🌅' : '🌙';
+    const accent = isPre ? '#FBBF24' : '#A78BFA';
+    extBanner = `
+      <div style="margin-top:14px;padding:10px 14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+        background:${extUp ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)'};
+        border:1px solid ${extUp ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'};">
+        <span style="font-size:12px;font-weight:700;color:${accent};">${icon} تداول ${label}</span>
+        <span style="font-size:13px;font-weight:800;direction:ltr;color:${extUp ? 'var(--emerald-light)' : 'var(--red-light)'};">
+          ${extUp ? '▲' : '▼'} ${extUp ? '+' : ''}${fmtNum(totals.extChangeSAR)} ر.س (${fmtPct(totals.extChangePct)})
+        </span>
+      </div>
+    `;
+  }
+
   hero.innerHTML = `
     <div class="hero-glow ${glowClass}"></div>
     <div class="hero-header">
@@ -1327,7 +1411,31 @@ function renderHero(totals, isProfit, isDayUp) {
       <span class="hero-currency">ر.س</span>
     </div>
     <p class="hero-usd">≈ ${fmtUSD(totals.valueUSD)}</p>
+    ${extBanner}
     <div class="hero-grid">
+      <div>
+        <div class="metric-label">التكلفة</div>
+        <div class="metric-value">${fmtNum(totals.costSAR)}</div>
+        <div class="metric-sub">≈ ${fmtUSD(totals.costUSD)}</div>
+      </div>
+      <div>
+        <div class="metric-label">الربح</div>
+        <div class="metric-value ${isProfit ? 'profit' : 'loss'}">${isProfit ? '+' : ''}${fmtNum(totals.profitSAR)}</div>
+        <div class="metric-sub">≈ ${isProfit ? '+' : ''}${fmtUSD(totals.profitUSD)}</div>
+      </div>
+      <div>
+        <div class="metric-label">نسبة الربح</div>
+        <div class="metric-value ${isProfit ? 'profit' : 'loss'}">${fmtPct(totals.profitPct)}</div>
+        <div class="metric-sub">على التكلفة</div>
+      </div>
+      <div>
+        <div class="metric-label">عدد الأسهم</div>
+        <div class="metric-value">${HOLDINGS.length}</div>
+        <div class="metric-sub">في المحفظة</div>
+      </div>
+    </div>
+  `;
+}
       <div>
         <div class="metric-label">التكلفة</div>
         <div class="metric-value">${fmtNum(totals.costSAR)}</div>
@@ -1485,6 +1593,11 @@ function renderPositions(data) {
                 <div class="stock-pl ${isProfit ? 'profit' : 'loss'}">
                   ${isProfit ? '+' : ''}${fmtNum(h.profitSAR)} (${fmtPct(h.profitPct)})
                 </div>
+                ${h.hasExtended ? `
+                  <div style="font-size:10px;font-weight:700;direction:ltr;margin-top:3px;color:${h.extChange >= 0 ? 'var(--emerald-light)' : 'var(--red-light)'};">
+                    ${state.marketStatus === 'pre' ? '🌅' : '🌙'} ${h.extChange >= 0 ? '+' : ''}${fmtPct(h.extChangePct)}
+                  </div>
+                ` : ''}
               </div>
             </button>
             ${expanded ? `
@@ -1496,6 +1609,7 @@ function renderPositions(data) {
                 <div>
                   <div class="detail-label">سعر السهم الحالي</div>
                   <div class="detail-value">${h.currentPrice ? '$' + fmtNum(h.currentPrice) : '—'}</div>
+                  ${h.hasExtended ? `<div class="detail-sub">جلسة عادية: $${fmtNum(h.regularPrice)}</div>` : ''}
                 </div>
                 <div>
                   <div class="detail-label">التكلفة</div>
@@ -1512,10 +1626,18 @@ function renderPositions(data) {
                   <div class="detail-value" style="color:${isProfit ? 'var(--emerald-light)' : 'var(--red-light)'}">${isProfit ? '+' : ''}${fmtNum(h.profitSAR)} ر.س</div>
                   <div class="detail-sub">${isProfit ? '+' : ''}${fmtUSD(h.profit)}</div>
                 </div>
+                ${h.hasExtended ? `
+                <div>
+                  <div class="detail-label">${state.marketStatus === 'pre' ? 'حركة قبل الافتتاح' : 'حركة بعد الإغلاق'}</div>
+                  <div class="detail-value" style="color:${h.extChange >= 0 ? 'var(--emerald-light)' : 'var(--red-light)'}">${h.extChange >= 0 ? '+' : ''}${fmtNum(h.extChangeSAR)} ر.س</div>
+                  <div class="detail-sub">${fmtPct(h.extChangePct)}</div>
+                </div>
+                ` : `
                 <div>
                   <div class="detail-label">القطاع</div>
                   <div class="detail-value" style="direction:rtl;text-align:right;">${h.sectorAr}</div>
                 </div>
+                `}
               </div>
             ` : ''}
           </div>
@@ -1712,7 +1834,7 @@ function renderPerformance(data) {
   }, 50);
 }
 
-function renderHistory() {
+function renderSP500() {
   const data = state.historyData;
   const loading = state.historyLoading;
   const error = state.historyError;
@@ -1725,9 +1847,10 @@ function renderHistory() {
   ];
   const modeBtns = [
     { v: 'pct', label: '%' },
-    { v: 'sar', label: 'ر.س' },
+    { v: 'points', label: 'نقاط' },
   ];
 
+  let headerHTML = '';
   let statsHTML = '';
   let chartArea;
 
@@ -1736,7 +1859,7 @@ function renderHistory() {
       <div class="history-loading">
         <div style="text-align:center;">
           <div style="display:inline-block;width:24px;height:24px;border:2px solid var(--border);border-top-color:#10B981;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:12px;"></div>
-          <div>جاري تحميل البيانات التاريخية...</div>
+          <div>جاري تحميل بيانات المؤشر...</div>
           <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">قد يأخذ 10-20 ثانية</div>
         </div>
       </div>
@@ -1747,34 +1870,54 @@ function renderHistory() {
         <div style="text-align:center;max-width:300px;">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <div style="color:var(--text);font-weight:600;margin-bottom:8px;">${error}</div>
-          <button class="btn-save" id="retry-history" style="margin-top:8px;">
+          <button class="btn-save" id="retry-sp500" style="margin-top:8px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             حاول مرة أخرى
           </button>
         </div>
       </div>
     `;
-  } else if (data && data.portfolio.length > 0) {
-    const first = data.portfolio[0];
-    const last = data.portfolio[data.portfolio.length - 1];
-    const change = last.valueSAR - first.valueSAR;
-    const changePct = (change / first.valueSAR) * 100;
-    const high = data.portfolio.reduce((m, p) => p.valueSAR > m.valueSAR ? p : m, first);
-    const low = data.portfolio.reduce((m, p) => p.valueSAR < m.valueSAR ? p : m, first);
+  } else if (data && data.index && data.index.length > 1) {
+    const idx = data.index;
+    const first = idx[0];
+    const last = idx[idx.length - 1];
+    const prev = idx[idx.length - 2];
+    const periodChange = last.price - first.price;
+    const periodChangePct = (periodChange / first.price) * 100;
+    const dayChange = last.price - prev.price;
+    const dayChangePct = (dayChange / prev.price) * 100;
+    const high = idx.reduce((m, p) => p.price > m.price ? p : m, first);
+    const low = idx.reduce((m, p) => p.price < m.price ? p : m, first);
+    const isDayUp = dayChange >= 0;
 
-    let spyComparison = '';
-    if (data.spy.length > 0 && state.showSPY) {
-      const spyFirst = data.spy[0].price;
-      const spyLast = data.spy[data.spy.length - 1].price;
-      const spyChangePct = ((spyLast - spyFirst) / spyFirst) * 100;
-      const beating = changePct > spyChangePct;
-      spyComparison = `
+    headerHTML = `
+      <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-top:4px;">
+        <span style="font-size:clamp(30px,7vw,42px);font-weight:900;letter-spacing:-0.02em;direction:ltr;">${fmtNum(last.price)}</span>
+        <span style="font-size:15px;font-weight:700;color:var(--text-muted);">نقطة</span>
+        <span class="day-chip ${isDayUp ? 'up' : 'down'}" style="margin-bottom:6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            ${isDayUp ? '<path d="M7 17L17 7M7 7h10v10"/>' : '<path d="M7 7l10 10M17 7v10H7"/>'}
+          </svg>
+          <span class="ltr">${fmtPct(dayChangePct)}</span>
+          <span style="opacity:0.6">آخر يوم</span>
+        </span>
+      </div>
+    `;
+
+    // Portfolio vs index comparison
+    let vsCard = '';
+    if (data.portfolio && data.portfolio.length > 1) {
+      const pFirst = data.portfolio[0].valueUSD;
+      const pLast = data.portfolio[data.portfolio.length - 1].valueUSD;
+      const pChangePct = ((pLast - pFirst) / pFirst) * 100;
+      const beating = pChangePct > periodChangePct;
+      vsCard = `
         <div class="stat-card">
-          <div class="stat-card-label">مقارنة بـ S&P 500</div>
+          <div class="stat-card-label">محفظتك مقابل المؤشر</div>
           <div class="vs-badge ${beating ? 'win' : 'lose'}" style="margin-top:4px;">
-            ${beating ? '▲' : '▼'} ${fmtPct(changePct - spyChangePct)}
+            ${beating ? '▲ متفوّقة' : '▼ متأخرة'} ${fmtPct(pChangePct - periodChangePct)}
           </div>
-          <div class="stat-card-sub">S&P: ${fmtPct(spyChangePct)}</div>
+          <div class="stat-card-sub">محفظتك: ${fmtPct(pChangePct)}</div>
         </div>
       `;
     }
@@ -1782,33 +1925,26 @@ function renderHistory() {
     statsHTML = `
       <div class="history-stats">
         <div class="stat-card">
-          <div class="stat-card-label">التغيّر في الفترة</div>
-          <div class="stat-card-value" style="color:${changePct >= 0 ? 'var(--emerald-light)' : 'var(--red-light)'}">${fmtPct(changePct)}</div>
-          <div class="stat-card-sub">${change >= 0 ? '+' : ''}${fmtNum(change)} ر.س</div>
+          <div class="stat-card-label">تغيّر المؤشر بالفترة</div>
+          <div class="stat-card-value" style="color:${periodChangePct >= 0 ? 'var(--emerald-light)' : 'var(--red-light)'}">${fmtPct(periodChangePct)}</div>
+          <div class="stat-card-sub">${periodChange >= 0 ? '+' : ''}${fmtNum(periodChange)} نقطة</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-label">أعلى قيمة</div>
-          <div class="stat-card-value">${fmtNum(high.valueSAR)}</div>
+          <div class="stat-card-label">أعلى نقطة</div>
+          <div class="stat-card-value">${fmtNum(high.price)}</div>
           <div class="stat-card-sub">${high.date.toLocaleDateString('en-GB')}</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-label">أدنى قيمة</div>
-          <div class="stat-card-value">${fmtNum(low.valueSAR)}</div>
+          <div class="stat-card-label">أدنى نقطة</div>
+          <div class="stat-card-value">${fmtNum(low.price)}</div>
           <div class="stat-card-sub">${low.date.toLocaleDateString('en-GB')}</div>
         </div>
-        ${spyComparison}
+        ${vsCard}
       </div>
-      ${data.missingStocks > 0 ? `<div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);font-size:12px;color:#FCD34D;">⚠️ تعذّر تحميل بيانات ${data.missingStocks} من الأسهم — قد يكون الرسم غير دقيق</div>` : ''}
     `;
     chartArea = `<canvas id="history-chart"></canvas>`;
   } else {
-    chartArea = `
-      <div class="history-loading">
-        <div style="text-align:center;">
-          <div>جاري التحميل...</div>
-        </div>
-      </div>
-    `;
+    chartArea = `<div class="history-loading"><div style="text-align:center;"><div>جاري التحميل...</div></div></div>`;
   }
 
   document.getElementById('tab-content').innerHTML = `
@@ -1816,8 +1952,8 @@ function renderHistory() {
       <div class="card">
         <div class="history-controls">
           <div class="card-title" style="margin:0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-            أداء المحفظة التاريخي
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><path d="M3 3v18h18"/></svg>
+            مؤشر S&P 500
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <div class="toggle-group">
@@ -1826,15 +1962,19 @@ function renderHistory() {
             <div class="toggle-group">
               ${modeBtns.map(b => `<button class="toggle-btn ${state.historyMode === b.v ? 'active' : ''}" data-mode="${b.v}">${b.label}</button>`).join('')}
             </div>
-            <button class="toggle-btn" id="spy-toggle" style="border:1px solid var(--border);background:${state.showSPY ? '#fff' : 'rgba(255,255,255,0.04)'};color:${state.showSPY ? '#0F172A' : 'var(--text-muted)'};border-radius:10px;padding:6px 14px;">
-              S&P 500
+            <button class="toggle-btn" id="portfolio-toggle" style="border:1px solid var(--border);background:${state.showSPY ? 'var(--tab-active-bg)' : 'var(--bg-elevated)'};color:${state.showSPY ? 'var(--tab-active-text)' : 'var(--text-muted)'};border-radius:10px;padding:6px 14px;">
+              قارن بمحفظتي
             </button>
           </div>
         </div>
-        <div class="history-chart-wrap">
+        ${headerHTML}
+        <div class="history-chart-wrap" style="margin-top:12px;">
           ${chartArea}
         </div>
         ${statsHTML}
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;border-radius:12px;background:var(--bg-elevated);border:1px solid var(--border);font-size:12px;color:var(--text-muted);">
+        ℹ️ مؤشر S&P 500 يضم أكبر 500 شركة أمريكية مدرجة — يُستخدم كمعيار لقياس أداء السوق.
       </div>
     </div>
   `;
@@ -1845,7 +1985,7 @@ function renderHistory() {
       state.historyRange = b.dataset.range;
       state.historyData = null;
       state.historyError = null;
-      loadHistory();
+      loadSP500();
     });
   });
   document.querySelectorAll('[data-mode]').forEach(b => {
@@ -1854,50 +1994,47 @@ function renderHistory() {
       render();
     });
   });
-  document.getElementById('spy-toggle')?.addEventListener('click', () => {
+  document.getElementById('portfolio-toggle')?.addEventListener('click', () => {
     state.showSPY = !state.showSPY;
     render();
   });
-  document.getElementById('retry-history')?.addEventListener('click', () => {
+  document.getElementById('retry-sp500')?.addEventListener('click', () => {
     state.historyError = null;
     state.historyData = null;
-    loadHistory();
+    loadSP500();
   });
 
-  // Render chart (only if we have data)
-  if (data && data.portfolio.length > 0 && !loading && !error) {
+  // Render chart
+  if (data && data.index && data.index.length > 1 && !loading && !error) {
     setTimeout(() => {
       const ctx = document.getElementById('history-chart');
       if (!ctx) return;
       if (historyChart) historyChart.destroy();
+      const cc = chartColors();
 
-      const labels = data.portfolio.map(p => p.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
+      const labels = data.index.map(p => p.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
+      const datasets = [];
 
-      let datasets = [];
       if (state.historyMode === 'pct') {
-        const first = data.portfolio[0].valueSAR;
-        const portPct = data.portfolio.map(p => ((p.valueSAR - first) / first) * 100);
+        // Percent change view
+        const idxFirst = data.index[0].price;
         datasets.push({
-          label: 'المحفظة',
-          data: portPct,
-          borderColor: '#10B981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          label: 'S&P 500',
+          data: data.index.map(p => ((p.price - idxFirst) / idxFirst) * 100),
+          borderColor: '#60A5FA',
+          backgroundColor: 'rgba(96, 165, 250, 0.12)',
           borderWidth: 2.5,
           fill: true,
           tension: 0.3,
           pointRadius: 0,
           pointHoverRadius: 6,
-          pointHoverBackgroundColor: '#10B981',
         });
-        if (state.showSPY && data.spy.length > 0) {
-          const spyFirst = data.spy[0].price;
-          const spyPct = data.spy.map(p => ((p.price - spyFirst) / spyFirst) * 100);
-          // Pad with nulls if SPY has fewer points than portfolio (or vice versa)
-          while (spyPct.length < labels.length) spyPct.unshift(null);
+        if (state.showSPY && data.portfolio && data.portfolio.length > 1) {
+          const pFirst = data.portfolio[0].valueUSD;
           datasets.push({
-            label: 'S&P 500',
-            data: spyPct.slice(-labels.length),
-            borderColor: '#94A3B8',
+            label: 'محفظتي',
+            data: data.portfolio.map(p => ((p.valueUSD - pFirst) / pFirst) * 100),
+            borderColor: '#10B981',
             backgroundColor: 'transparent',
             borderWidth: 2,
             borderDash: [6, 4],
@@ -1908,11 +2045,12 @@ function renderHistory() {
           });
         }
       } else {
+        // Absolute points view
         datasets.push({
-          label: 'المحفظة (ر.س)',
-          data: data.portfolio.map(p => p.valueSAR),
-          borderColor: '#10B981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          label: 'S&P 500',
+          data: data.index.map(p => p.price),
+          borderColor: '#60A5FA',
+          backgroundColor: 'rgba(96, 165, 250, 0.12)',
           borderWidth: 2.5,
           fill: true,
           tension: 0.3,
@@ -1932,32 +2070,32 @@ function renderHistory() {
             legend: {
               display: datasets.length > 1,
               position: 'top',
-              labels: { color: chartColors().legendText, font: { family: 'Tajawal', size: 12 }, usePointStyle: true, padding: 16 }
+              labels: { color: cc.legendText, font: { family: 'Tajawal', size: 12 }, usePointStyle: true, padding: 16 }
             },
             tooltip: {
-              backgroundColor: chartColors().tooltipBg,
-              borderColor: chartColors().tooltipBorder,
-              titleColor: chartColors().tooltipText,
-              bodyColor: chartColors().tooltipText,
+              backgroundColor: cc.tooltipBg,
+              borderColor: cc.tooltipBorder,
+              titleColor: cc.tooltipText,
+              bodyColor: cc.tooltipText,
               borderWidth: 1,
               padding: 12,
               callbacks: {
                 label: (ctx) => {
                   const v = ctx.parsed.y;
                   if (v == null) return null;
-                  return ` ${ctx.dataset.label}: ${state.historyMode === 'pct' ? fmtPct(v) : fmtNum(v) + ' ر.س'}`;
+                  return ` ${ctx.dataset.label}: ${state.historyMode === 'pct' ? fmtPct(v) : fmtNum(v) + ' نقطة'}`;
                 }
               }
             }
           },
           scales: {
-            x: { ticks: { color: chartColors().text, font: { family: 'Tajawal', size: 11 }, maxTicksLimit: 8 }, grid: { display: false }, reverse: false },
+            x: { ticks: { color: cc.text, font: { family: 'Tajawal', size: 11 }, maxTicksLimit: 8 }, grid: { display: false } },
             y: {
               ticks: {
-                color: chartColors().text, font: { family: 'Tajawal', size: 11 },
+                color: cc.text, font: { family: 'Tajawal', size: 11 },
                 callback: (v) => state.historyMode === 'pct' ? `${v.toFixed(1)}%` : fmtNum(v, 0)
               },
-              grid: { color: chartColors().grid }
+              grid: { color: cc.grid }
             }
           }
         }
@@ -2065,7 +2203,7 @@ function render() {
     case 'positions': renderPositions(data); break;
     case 'sectors': renderSectors(data, totals); break;
     case 'performance': renderPerformance(data); break;
-    case 'history': renderHistory(); break;
+    case 'sp500': renderSP500(); break;
     case 'news': renderNews(); break;
   }
 }
@@ -2077,8 +2215,8 @@ document.querySelectorAll('.tab').forEach(t => {
     state.expandedStock = null;
     render();
     // Lazy-load on first visit
-    if (state.activeTab === 'history' && !state.historyData && !state.historyLoading) {
-      loadHistory();
+    if (state.activeTab === 'sp500' && !state.historyData && !state.historyLoading) {
+      loadSP500();
     }
     if (state.activeTab === 'news' && !state.newsData && !state.newsLoading && state.apiKey) {
       loadNews();
