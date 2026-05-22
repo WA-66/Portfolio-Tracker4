@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="theme-color" content="#020617">
+  <title>محفظتي · Portfolio Tracker</title>
+
+  <!-- PWA: install on iOS / Android home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="محفظتي">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2310B981'/%3E%3Cstop offset='1' stop-color='%23047857'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='42' fill='url(%23g)'/%3E%3Cpath d='M138 78h-8V62c0-4.4-3.6-8-8-8H62c-8.8 0-16 7.2-16 16v60c0 8.8 7.2 16 16 16h76c4.4 0 8-3.6 8-8V86c0-4.4-3.6-8-8-8zm-12 32c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z' fill='white'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%2310B981'/%3E%3Cpath d='M138 78h-8V62c0-4.4-3.6-8-8-8H62c-8.8 0-16 7.2-16 16v60c0 8.8 7.2 16 16 16h76c4.4 0 8-3.6 8-8V86c0-4.4-3.6-8-8-8zm-12 32c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z' fill='white'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      /* Dark theme (default) */
+      --bg-0: #020617;
+      --bg-1: #0F172A;
+      --bg-card: rgba(255,255,255,0.025);
+      --bg-card-hover: rgba(255,255,255,0.045);
+      --bg-elevated: rgba(255,255,255,0.05);
+      --bg-elevated-hover: rgba(255,255,255,0.10);
+      --body-bg: radial-gradient(ellipse 80% 50% at top, #0F172A 0%, #020617 60%, #000 100%);
+      --header-bg: rgba(2, 6, 23, 0.85);
+      --hero-bg: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(2,6,23,0.4) 50%, rgba(99,102,241,0.06) 100%);
+      --tab-active-bg: #FFFFFF;
+      --tab-active-text: #0F172A;
+      --input-bg: rgba(255,255,255,0.04);
+      --settings-panel-bg: rgba(0,0,0,0.5);
+      --install-banner-bg: rgba(15, 23, 42, 0.95);
+      --details-bg: rgba(0,0,0,0.3);
+      --hero-value-grad: linear-gradient(135deg, #fff 0%, #94A3B8 100%);
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.15);
+      --text: #FFFFFF;
+      --text-muted: rgba(255,255,255,0.6);
+      --text-dim: rgba(255,255,255,0.4);
+      --grid-line: rgba(255,255,255,0.04);
+      --chart-text: #94A3B8;
+      --tooltip-bg: #0F172A;
+      --emerald: #10B981;
+      --emerald-light: #34D399;
+      --red: #EF4444;
+      --red-light: #F87171;
+      --blue: #60A5FA;
+      --amber: #FBBF24;
+      --pink: #F472B6;
+      --purple: #A78BFA;
+    }
+
+    [data-theme="light"] {
+      --bg-0: #FFFFFF;
+      --bg-1: #F8FAFC;
+      --bg-card: rgba(255,255,255,0.85);
+      --bg-card-hover: #F1F5F9;
+      --bg-elevated: rgba(15,23,42,0.05);
+      --bg-elevated-hover: rgba(15,23,42,0.10);
+      --body-bg: radial-gradient(ellipse 80% 50% at top, #F1F5F9 0%, #FFFFFF 50%, #FAFAFA 100%);
+      --header-bg: rgba(255, 255, 255, 0.85);
+      --hero-bg: linear-gradient(135deg, rgba(16,185,129,0.07) 0%, rgba(241,245,249,0.6) 50%, rgba(99,102,241,0.05) 100%);
+      --tab-active-bg: #0F172A;
+      --tab-active-text: #FFFFFF;
+      --input-bg: rgba(15,23,42,0.04);
+      --settings-panel-bg: rgba(255,255,255,0.9);
+      --install-banner-bg: rgba(255, 255, 255, 0.96);
+      --details-bg: rgba(241,245,249,0.5);
+      --hero-value-grad: linear-gradient(135deg, #0F172A 0%, #475569 100%);
+      --border: rgba(15,23,42,0.08);
+      --border-strong: rgba(15,23,42,0.18);
+      --text: #0F172A;
+      --text-muted: rgba(15,23,42,0.65);
+      --text-dim: rgba(15,23,42,0.45);
+      --grid-line: rgba(15,23,42,0.06);
+      --chart-text: #475569;
+      --tooltip-bg: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Tajawal', system-ui, sans-serif;
+      background: var(--body-bg);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+    input { font-family: inherit; }
+
+    .num, .ltr { direction: ltr; display: inline-block; font-variant-numeric: tabular-nums; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* === HEADER === */
+    .header {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--header-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s ease;
+    }
+    .header-inner {
+      max-width: 1280px; margin: 0 auto;
+      padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, #10B981, #047857);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-title { font-size: 18px; font-weight: 900; }
+    .brand-sub { font-size: 11px; color: var(--text-dim); direction: ltr; text-align: right; }
+
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      font-size: 11px; font-weight: 600;
+    }
+    .pill-live { background: rgba(16, 185, 129, 0.12); color: var(--emerald-light); border-color: rgba(16,185,129,0.3); }
+    .pill-closed { background: var(--bg-elevated); color: var(--text-muted); }
+
+    .live-dot {
+      position: relative; width: 8px; height: 8px;
+    }
+    .live-dot::before, .live-dot::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 50%;
+    }
+    .live-dot::before { background: var(--emerald); }
+    .live-dot.active::after { background: var(--emerald); animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+    .live-dot.offline::before { background: #6B7280; }
+
+    @keyframes ping {
+      75%, 100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--bg-elevated);
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .icon-btn:hover { background: var(--bg-elevated-hover); }
+    .icon-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .spinning { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* === MAIN === */
+    main {
+      max-width: 1280px; margin: 0 auto;
+      padding: 24px 20px 60px;
+      display: flex; flex-direction: column; gap: 24px;
+    }
+
+    /* === HERO === */
+    .hero {
+      position: relative; overflow: hidden;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      padding: 28px;
+      background: var(--hero-bg);
+      transition: background 0.3s ease;
+    }
+    .hero-glow {
+      position: absolute; top: -50%; right: -20%;
+      width: 400px; height: 400px;
+      border-radius: 50%; filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .hero-glow.profit { background: var(--emerald); }
+    .hero-glow.loss { background: var(--red); }
+    .hero-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; position: relative;
+    }
+    .hero-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .day-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 8px;
+      font-size: 11px; font-weight: 700;
+    }
+    .day-chip.up { background: rgba(16,185,129,0.15); color: var(--emerald-light); }
+    .day-chip.down { background: rgba(239,68,68,0.15); color: var(--red-light); }
+
+    .hero-value {
+      font-size: clamp(36px, 8vw, 52px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      background: var(--hero-value-grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      direction: ltr;
+      display: inline-block;
+    }
+    .hero-currency {
+      font-size: 22px; font-weight: 700; color: var(--text-muted);
+      margin-right: 8px;
+    }
+    .hero-usd { font-size: 13px; color: var(--text-dim); direction: ltr; text-align: right; margin-top: 4px; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    @media (min-width: 640px) { .hero-grid { grid-template-columns: repeat(4, 1fr); } }
+    .metric-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+    .metric-value { font-size: 18px; font-weight: 700; direction: ltr; text-align: right; color: var(--text); }
+    .metric-value.profit { color: var(--emerald-light); }
+    .metric-value.loss { color: var(--red-light); }
+    .metric-sub { font-size: 11px; color: var(--text-dim); direction: ltr; text-align: right; }
+
+    /* === TABS === */
+    .tabs {
+      display: flex; gap: 4px; padding: 4px;
+      border-radius: 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      flex: 1; min-width: max-content;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--text); background: var(--bg-elevated); }
+    .tab.active {
+      background: var(--tab-active-bg); color: var(--tab-active-text);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* === CARD === */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title svg { color: var(--emerald-light); }
+
+    /* Overview top cards */
+    .top-grid {
+      display: grid; gap: 12px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 768px) { .top-grid { grid-template-columns: repeat(3, 1fr); } }
+    .highlight-card {
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid;
+    }
+    .highlight-emerald { background: rgba(16,185,129,0.06); border-color: rgba(16,185,129,0.25); }
+    .highlight-red { background: rgba(239,68,68,0.06); border-color: rgba(239,68,68,0.25); }
+    .highlight-blue { background: rgba(96,165,250,0.06); border-color: rgba(96,165,250,0.25); }
+    .highlight-amber { background: rgba(251,191,36,0.06); border-color: rgba(251,191,36,0.25); }
+
+    .highlight-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .highlight-title { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .highlight-icon-emerald { color: var(--emerald-light); }
+    .highlight-icon-red { color: var(--red-light); }
+    .highlight-icon-blue { color: var(--blue); }
+    .highlight-icon-amber { color: var(--amber); }
+    .highlight-stock { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+    .highlight-symbol { font-size: 16px; font-weight: 700; }
+    .highlight-name { font-size: 11px; color: var(--text-dim); }
+    .highlight-value { font-size: 22px; font-weight: 900; direction: ltr; text-align: right; }
+    .highlight-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; direction: ltr; text-align: right; }
+
+    /* Pie chart container */
+    .chart-row {
+      display: grid; grid-template-columns: 1fr; gap: 24px; align-items: center;
+    }
+    @media (min-width: 768px) { .chart-row { grid-template-columns: 1fr 1fr; } }
+    .chart-container { position: relative; height: 280px; }
+
+    .legend { display: flex; flex-direction: column; gap: 6px; }
+    .legend-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 12px; border-radius: 10px;
+      transition: background 0.15s;
+    }
+    .legend-item:hover { background: var(--bg-elevated); }
+    .legend-left { display: flex; align-items: center; gap: 10px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+    .legend-symbol { font-size: 13px; font-weight: 700; }
+    .legend-pct { font-size: 13px; color: var(--text-muted); direction: ltr; }
+
+    /* === POSITIONS === */
+    .positions-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .positions-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .positions-title svg { color: var(--emerald-light); }
+    .positions-hint { font-size: 11px; color: var(--text-dim); }
+
+    .stock-row {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      transition: background 0.15s, border-color 0.15s;
+      margin-bottom: 10px;
+    }
+    .stock-row:hover { background: var(--bg-card-hover); border-color: var(--border-strong); }
+    .stock-main {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px; gap: 12px;
+      text-align: right; width: 100%;
+    }
+    .stock-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .stock-badge {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 13px;
+      flex-shrink: 0;
+    }
+    .stock-info { min-width: 0; flex: 1; text-align: right; }
+    .stock-symbol-row { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+    .live-mini { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald-light); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .stock-symbol { font-weight: 700; font-size: 15px; }
+    .stock-name { font-size: 11px; color: var(--text-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stock-right { text-align: left; flex-shrink: 0; }
+    .stock-value { font-weight: 700; direction: ltr; }
+    .stock-pl { font-size: 11px; font-weight: 600; direction: ltr; margin-top: 2px; }
+    .stock-pl.profit { color: var(--emerald-light); }
+    .stock-pl.loss { color: var(--red-light); }
+
+    .stock-details {
+      padding: 16px; background: var(--details-bg);
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      font-size: 13px;
+    }
+    .detail-label { font-size: 11px; color: var(--text-dim); margin-bottom: 2px; }
+    .detail-value { font-weight: 600; direction: ltr; text-align: right; }
+    .detail-sub { font-size: 11px; color: var(--text-dim); direction: ltr; text-align: right; }
+
+    /* === SECTORS === */
+    .sector-card {
+      border-radius: 18px;
+      padding: 18px;
+      border: 1px solid;
+      margin-bottom: 12px;
+    }
+    .sector-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .sector-left { display: flex; align-items: center; gap: 12px; }
+    .sector-color { width: 40px; height: 40px; border-radius: 12px; }
+    .sector-name { font-weight: 700; }
+    .sector-count { font-size: 11px; color: var(--text-dim); }
+    .sector-value { font-weight: 700; font-size: 17px; direction: ltr; text-align: left; }
+    .sector-pct { font-size: 11px; color: var(--text-muted); direction: ltr; text-align: left; }
+    .sector-metrics {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+      padding-top: 12px; border-top: 1px solid var(--border);
+    }
+    .sector-metric-label { font-size: 11px; color: var(--text-dim); }
+    .sector-metric-value { font-weight: 600; font-size: 13px; direction: ltr; text-align: right; }
+    .sector-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+    .sector-tag {
+      font-size: 11px; font-weight: 700;
+      padding: 4px 8px; border-radius: 6px;
+      background: var(--bg-elevated);
+    }
+
+    /* === PERFORMANCE === */
+    .perf-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 0;
+    }
+    .perf-rank { width: 28px; text-align: center; font-size: 11px; color: var(--text-dim); font-weight: 700; }
+    .perf-symbol { width: 60px; font-weight: 700; font-size: 14px; }
+    .perf-bar-bg {
+      flex: 1; height: 28px;
+      background: var(--bg-elevated);
+      border-radius: 8px; overflow: hidden;
+      position: relative;
+    }
+    .perf-bar {
+      height: 100%; border-radius: 8px;
+      transition: width 0.7s ease;
+    }
+    .perf-bar.profit { background: linear-gradient(90deg, #059669, #10B981); }
+    .perf-bar.loss { background: linear-gradient(90deg, #DC2626, #EF4444); }
+    .perf-value { width: 90px; text-align: left; font-weight: 700; font-size: 13px; direction: ltr; }
+    .perf-value.profit { color: var(--emerald-light); }
+    .perf-value.loss { color: var(--red-light); }
+
+    /* === SETTINGS === */
+    .settings-panel {
+      background: var(--settings-panel-bg);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+    }
+    .settings-inner { max-width: 1280px; margin: 0 auto; }
+    .settings-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; justify-content: space-between; }
+    .settings-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+    .settings-row { display: flex; gap: 8px; }
+    .input {
+      flex: 1; padding: 9px 12px;
+      border-radius: 10px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text); font-size: 13px;
+      direction: ltr;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .input:focus { border-color: rgba(16,185,129,0.5); }
+    .btn-save {
+      padding: 9px 16px;
+      border-radius: 10px;
+      background: var(--emerald);
+      color: #fff; font-size: 13px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-save:hover { background: #059669; }
+    .settings-hint { font-size: 11px; color: var(--text-dim); margin-top: 8px; }
+    .settings-hint a { color: var(--blue); text-decoration: none; }
+
+    .error-bar {
+      background: rgba(251,191,36,0.08);
+      border-top: 1px solid rgba(251,191,36,0.3);
+      border-bottom: 1px solid rgba(251,191,36,0.3);
+      padding: 8px 16px;
+      font-size: 12px; color: var(--amber);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+
+    /* === HISTORY === */
+    .toggle-group {
+      display: inline-flex; padding: 3px; gap: 2px;
+      background: var(--bg-elevated);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .toggle-btn {
+      padding: 6px 14px; border-radius: 8px;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+    .toggle-btn:hover { color: var(--text); }
+    .toggle-btn.active { background: var(--tab-active-bg); color: var(--tab-active-text); }
+
+    .history-controls {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+    }
+    .history-chart-wrap { height: 380px; position: relative; }
+    .history-loading {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 13px;
+      background: rgba(2,6,23,0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 16px;
+    }
+    .history-stats {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      margin-top: 16px;
+    }
+    @media (min-width: 640px) { .history-stats { grid-template-columns: repeat(4, 1fr); } }
+    .stat-card {
+      padding: 14px; border-radius: 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+    }
+    .stat-card-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+    .stat-card-value { font-size: 16px; font-weight: 700; direction: ltr; text-align: right; color: var(--text); }
+    .stat-card-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; direction: ltr; text-align: right; }
+
+    .vs-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 8px;
+      font-size: 12px; font-weight: 700;
+    }
+    .vs-badge.win { background: rgba(16,185,129,0.15); color: var(--emerald-light); }
+    .vs-badge.lose { background: rgba(239,68,68,0.15); color: var(--red-light); }
+
+    /* === NEWS === */
+    .news-tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .news-tabs::-webkit-scrollbar { display: none; }
+    .news-filter {
+      padding: 6px 12px; border-radius: 10px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .news-filter:hover { color: var(--text); background: var(--bg-elevated-hover); }
+    .news-filter.active { background: var(--tab-active-bg); color: var(--tab-active-text); border-color: var(--tab-active-bg); }
+
+    .news-item {
+      display: flex; gap: 14px;
+      padding: 14px; margin-bottom: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      transition: background 0.15s, border-color 0.15s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .news-item:hover { background: var(--bg-card-hover); border-color: var(--border-strong); }
+    .news-thumb {
+      width: 90px; height: 90px;
+      border-radius: 10px;
+      background: var(--bg-elevated);
+      flex-shrink: 0;
+      background-size: cover;
+      background-position: center;
+    }
+    @media (max-width: 480px) { .news-thumb { width: 70px; height: 70px; } }
+    .news-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+    .news-headline {
+      font-size: 14px; font-weight: 700; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .news-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim); }
+    .news-source { font-weight: 600; color: var(--text-muted); }
+    .news-symbol { padding: 2px 6px; border-radius: 4px; background: var(--bg-elevated); font-weight: 700; }
+    .news-empty {
+      text-align: center; padding: 40px 20px;
+      color: var(--text-muted); font-size: 14px;
+    }
+    .news-empty-icon { margin-bottom: 12px; opacity: 0.5; }
+
+    /* Install prompt */
+    .install-banner {
+      position: fixed; bottom: 20px; left: 20px; right: 20px;
+      max-width: 400px; margin: 0 auto;
+      padding: 14px 16px;
+      background: var(--install-banner-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 14px;
+      display: flex; align-items: center; gap: 12px;
+      z-index: 100;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .install-banner-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg, #10B981, #047857);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .install-banner-content { flex: 1; min-width: 0; }
+    .install-banner-title { font-size: 13px; font-weight: 700; }
+    .install-banner-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .install-banner-close {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--bg-elevated);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .install-banner-close:hover { background: var(--bg-elevated-hover); }
+
+    /* === LOCK SCREEN === */
+    .lock-screen {
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--body-bg);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .lock-screen.unlocked {
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+    .lock-box {
+      text-align: center; max-width: 360px; width: 100%;
+    }
+    .lock-app-icon {
+      width: 72px; height: 72px; border-radius: 20px;
+      background: linear-gradient(135deg, #10B981, #047857);
+      box-shadow: 0 16px 40px rgba(16, 185, 129, 0.35);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .lock-title {
+      font-size: 26px; font-weight: 900; color: var(--text);
+      margin-bottom: 6px;
+    }
+    .lock-subtitle {
+      font-size: 14px; color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+    .lock-input-wrap {
+      display: flex; gap: 8px;
+    }
+    .lock-input {
+      flex: 1; padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text); font-size: 16px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .lock-input:focus { border-color: var(--emerald); }
+    .lock-input::placeholder { color: var(--text-dim); }
+    .lock-btn {
+      width: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, #10B981, #047857);
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.1s, filter 0.15s;
+      flex-shrink: 0;
+    }
+    .lock-btn:hover { filter: brightness(1.1); }
+    .lock-btn:active { transform: scale(0.95); }
+    .lock-error {
+      margin-top: 16px;
+      font-size: 13px; color: var(--red-light);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .lock-box.shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97);
+    }
+    @keyframes shake {
+      10%, 90% { transform: translateX(-2px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-8px); }
+      40%, 60% { transform: translateX(8px); }
+    }
+
+    /* === FOOTER === */
+    footer {
+      max-width: 1280px; margin: 0 auto;
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 11px; color: var(--text-dim);
+      border-top: 1px solid var(--border);
+    }
+    footer p { margin-bottom: 4px; }
+
+    /* Utility */
+    .hidden { display: none !important; }
+    svg { display: inline-block; vertical-align: middle; }
+
+    /* Animations */
+    .fade-in { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== LOCK SCREEN ===== -->
+<div id="lock-screen" class="lock-screen">
+  <div class="lock-box">
+    <div class="lock-app-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+    <h1 class="lock-title">محفظتي</h1>
+    <p class="lock-subtitle">أدخل كلمة السر للدخول</p>
+    <div class="lock-input-wrap">
+      <input type="password" id="lock-input" class="lock-input" placeholder="كلمة السر" autocomplete="off" />
+      <button id="lock-btn" class="lock-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div id="lock-error" class="lock-error hidden">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      كلمة السر غير صحيحة
+    </div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fff">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">محفظتي</div>
+        <div class="brand-sub">Portfolio Tracker</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div id="live-pill" class="pill">
+        <span class="live-dot offline" id="live-dot"></span>
+        <span id="live-text" class="ltr">OFFLINE</span>
+      </div>
+      <div id="market-pill" class="pill"></div>
+      <div id="time-pill" class="pill hidden">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="time-text" class="ltr"></span>
+      </div>
+      <button class="icon-btn" id="refresh-btn" title="تحديث">
+        <svg id="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      </button>
+      <button class="icon-btn" id="theme-btn" title="الوضع الليلي/النهاري">
+        <svg id="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+      <button class="icon-btn" id="settings-btn" title="إعدادات">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div id="settings-panel" class="settings-panel hidden">
+    <div class="settings-inner">
+      <div class="settings-title">
+        <span style="display:flex;align-items:center;gap:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg>
+          الإعدادات
+        </span>
+        <button class="icon-btn" id="close-settings" style="width:28px;height:28px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="settings-label">مفتاح Finnhub API (اختياري — لأسعار أسرع وأكثر استقراراً)</div>
+      <div class="settings-row">
+        <input type="password" id="api-key-input" class="input" placeholder="ضع المفتاح هنا..."/>
+        <button class="btn-save" id="save-key-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          حفظ
+        </button>
+      </div>
+      <div class="settings-hint">احصل على مفتاح مجاني من <a href="https://finnhub.io/register" target="_blank">finnhub.io</a>. بدون مفتاح يُستخدم Yahoo Finance (قد يتأخر 15د).</div>
+    </div>
+  </div>
+  <div id="error-bar" class="error-bar hidden"></div>
+</header>
+
+<main>
+  <!-- Hero -->
+  <div class="hero" id="hero"></div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" data-tab="overview">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      نظرة عامة
+    </button>
+    <button class="tab" data-tab="positions">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+      المراكز
+    </button>
+    <button class="tab" data-tab="sectors">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+      القطاعات
+    </button>
+    <button class="tab" data-tab="performance">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      الأداء
+    </button>
+    <button class="tab" data-tab="history">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      تاريخي
+    </button>
+    <button class="tab" data-tab="news">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+      أخبار
+    </button>
+  </div>
+
+  <!-- Tab content -->
+  <div id="tab-content"></div>
+</main>
+
+<footer>
+  <p>تحديث الأسعار كل 60 ثانية · سعر الصرف 3.75 ر.س/دولار</p>
+  <p>البيانات من <span id="source-label" class="ltr">Yahoo Finance</span> · قد تتأخر 15 دقيقة بدون مفتاح Finnhub</p>
+</footer>
+
+<script>
+'use strict';
+
+// ============ DATA ============
+const HOLDINGS = [
+  { symbol: 'MRVL', name: 'Marvell Technology', nameAr: 'مارفل تكنولوجي', shares: 1.94, costBasisUSD: 302.87, initialValueUSD: 370.40, sectorAr: 'أشباه موصلات الشبكات', sectorColor: '#60A5FA' },
+  { symbol: 'SIMO', name: 'Silicon Motion', nameAr: 'سيليكون موشن', shares: 2, costBasisUSD: 465.98, initialValueUSD: 510.02, sectorAr: 'التخزين والذاكرة', sectorColor: '#10B981' },
+  { symbol: 'VICR', name: 'Vicor Corporation', nameAr: 'فايكور', shares: 0.68, costBasisUSD: 166.16, initialValueUSD: 178.69, sectorAr: 'إلكترونيات الطاقة', sectorColor: '#FBBF24' },
+  { symbol: 'MU', name: 'Micron Technology', nameAr: 'مايكرون', shares: 0.5, costBasisUSD: 313.04, initialValueUSD: 374.50, sectorAr: 'التخزين والذاكرة', sectorColor: '#6EE7B7' },
+  { symbol: 'TER', name: 'Teradyne', nameAr: 'تيرادين', shares: 0.1, costBasisUSD: 31.94, initialValueUSD: 35.20, sectorAr: 'معدات اختبار الرقائق', sectorColor: '#F472B6' },
+  { symbol: 'WDC', name: 'Western Digital', nameAr: 'ويسترن ديجيتال', shares: 2, costBasisUSD: 544.82, initialValueUSD: 956.36, sectorAr: 'التخزين والذاكرة', sectorColor: '#047857' },
+  { symbol: 'SNDK', name: 'Sandisk Corporation', nameAr: 'ساندسك', shares: 0.34, costBasisUSD: 200.05, initialValueUSD: 504.01, sectorAr: 'التخزين والذاكرة', sectorColor: '#34D399' },
+];
+
+const USD_TO_SAR = 3.75;
+const REFRESH_MS = 60000;
+
+// ============ STATE ============
+const state = {
+  livePrices: {},
+  loading: true,
+  lastUpdate: null,
+  activeTab: 'overview',
+  apiKey: '',
+  error: null,
+  marketStatus: 'checking',
+  expandedStock: null,
+  showSettings: false,
+  // History
+  historyData: null,
+  historyLoading: false,
+  historyError: null,
+  historyRange: '1mo',     // '1mo' | '3mo' | '6mo' | '1y'
+  historyMode: 'pct',      // 'pct' (% change) | 'sar' (absolute SAR)
+  showSPY: true,
+  // News
+  newsData: null,
+  newsLoading: false,
+  newsFilter: 'all',       // 'all' | symbol
+  // PWA
+  deferredInstall: null,
+  showInstall: false,
+  // Theme
+  theme: 'dark',
+};
+
+// Load saved API key
+try {
+  const saved = localStorage.getItem('finnhub_api_key');
+  if (saved) state.apiKey = saved;
+} catch (e) {}
+
+// Load saved theme
+try {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light' || savedTheme === 'dark') {
+    state.theme = savedTheme;
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    state.theme = 'light';
+  }
+} catch (e) {}
+
+// Chart instances
+let allocChart = null;
+let sectorChart = null;
+let perfChart = null;
+let historyChart = null;
+
+// ============ HELPERS ============
+const fmtNum = (n, d = 2) => (n ?? 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtSAR = (n) => `${fmtNum(n)} ر.س`;
+const fmtUSD = (n) => `$${fmtNum(n)}`;
+const fmtPct = (n) => `${(n ?? 0) >= 0 ? '+' : ''}${fmtNum(n)}%`;
+
+// Theme-aware chart colors
+function chartColors() {
+  const light = state.theme === 'light';
+  return {
+    text: light ? '#475569' : '#94A3B8',
+    grid: light ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.04)',
+    tooltipBg: light ? '#FFFFFF' : '#0F172A',
+    tooltipBorder: light ? 'rgba(15,23,42,0.12)' : 'rgba(255,255,255,0.1)',
+    tooltipText: light ? '#0F172A' : '#FFFFFF',
+    cellBorder: light ? '#FFFFFF' : '#0F172A',
+    legendText: light ? '#0F172A' : '#FFFFFF',
+  };
+}
+
+function applyTheme() {
+  if (state.theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  // Update theme-color meta
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', state.theme === 'light' ? '#FFFFFF' : '#020617');
+  // Toggle icon visibility
+  const moon = document.getElementById('theme-icon-moon');
+  const sun = document.getElementById('theme-icon-sun');
+  if (moon && sun) {
+    if (state.theme === 'light') {
+      moon.style.display = 'none';
+      sun.style.display = 'block';
+    } else {
+      moon.style.display = 'block';
+      sun.style.display = 'none';
+    }
+  }
+}
+
+// ============ API ============
+async function fetchYahoo(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=5d`;
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  ];
+  for (const p of proxies) {
+    try {
+      const res = await fetch(p);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const meta = data?.chart?.result?.[0]?.meta;
+      if (!meta?.regularMarketPrice) continue;
+      return {
+        price: meta.regularMarketPrice,
+        prevClose: meta.chartPreviousClose,
+        change: meta.regularMarketPrice - meta.chartPreviousClose,
+      };
+    } catch (e) { /* try next */ }
+  }
+  return null;
+}
+
+async function fetchFinnhub(symbol, key) {
+  try {
+    const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${key.trim()}`);
+    if (!res.ok) return null;
+    const d = await res.json();
+    if (!d.c) return null;
+    return { price: d.c, prevClose: d.pc, change: d.d };
+  } catch { return null; }
+}
+
+// ============ HISTORICAL DATA ============
+async function fetchHistorical(symbol, range = '1mo') {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=${range}`;
+  const proxies = [
+    `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  ];
+  for (const p of proxies) {
+    try {
+      const res = await fetch(p);
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (!text || text.trim().length < 50) continue;
+      let data;
+      try { data = JSON.parse(text); } catch { continue; }
+      const r = data?.chart?.result?.[0];
+      if (!r?.timestamp || !r?.indicators?.quote?.[0]?.close) continue;
+      const closes = r.indicators.quote[0].close;
+      const series = r.timestamp.map((ts, i) => ({
+        date: new Date(ts * 1000),
+        price: closes[i],
+      })).filter(p => p.price != null && !isNaN(p.price));
+      if (series.length === 0) continue;
+      return series;
+    } catch (e) { /* try next proxy */ }
+  }
+  return null;
+}
+
+async function loadHistory() {
+  if (state.historyLoading) return;
+  state.historyLoading = true;
+  state.historyError = null;
+  if (state.activeTab === 'history') render();
+
+  const symbols = [...HOLDINGS.map(h => h.symbol), 'SPY'];
+  const results = {};
+
+  await Promise.all(symbols.map(async (sym) => {
+    const data = await fetchHistorical(sym, state.historyRange);
+    if (data && data.length > 0) results[sym] = data;
+  }));
+
+  // Check if any stock data succeeded
+  const stocksWithData = HOLDINGS.filter(h => results[h.symbol]);
+  if (stocksWithData.length === 0) {
+    state.historyError = 'فشل تحميل البيانات التاريخية. خوادم البيانات قد تكون مشغولة.';
+    state.historyLoading = false;
+    if (state.activeTab === 'history') render();
+    return;
+  }
+
+  // Use date strings (YYYY-MM-DD) to avoid timestamp drift across symbols
+  const toDateStr = (d) => d.toISOString().split('T')[0];
+
+  // Collect all unique trading dates
+  const dateSet = new Set();
+  HOLDINGS.forEach(h => {
+    if (results[h.symbol]) {
+      results[h.symbol].forEach(p => dateSet.add(toDateStr(p.date)));
+    }
+  });
+  const sortedDates = [...dateSet].sort();
+
+  // Build price maps for fast lookup
+  const stockMaps = {};
+  HOLDINGS.forEach(h => {
+    if (results[h.symbol]) {
+      stockMaps[h.symbol] = new Map(results[h.symbol].map(p => [toDateStr(p.date), p.price]));
+    }
+  });
+
+  // Build portfolio timeseries with forward-fill for missing data points
+  const lastPrices = {};
+  const portfolio = sortedDates.map(dateStr => {
+    let total = 0;
+    HOLDINGS.forEach(h => {
+      const map = stockMaps[h.symbol];
+      const price = map?.get(dateStr) ?? lastPrices[h.symbol];
+      if (price != null) {
+        lastPrices[h.symbol] = price;
+        total += h.shares * price;
+      }
+    });
+    return {
+      date: new Date(dateStr + 'T00:00:00'),
+      valueUSD: total,
+      valueSAR: total * USD_TO_SAR,
+    };
+  }).filter(p => p.valueUSD > 0);
+
+  // Build SPY series aligned to same dates
+  const spy = [];
+  if (results.SPY) {
+    const spyMap = new Map(results.SPY.map(p => [toDateStr(p.date), p.price]));
+    let lastSpyPrice = null;
+    sortedDates.forEach(dateStr => {
+      const price = spyMap.get(dateStr) ?? lastSpyPrice;
+      if (price != null) {
+        lastSpyPrice = price;
+        spy.push({ date: new Date(dateStr + 'T00:00:00'), price });
+      }
+    });
+  }
+
+  state.historyData = { portfolio, spy, missingStocks: HOLDINGS.length - stocksWithData.length };
+  state.historyLoading = false;
+  if (state.activeTab === 'history') render();
+}
+
+// ============ NEWS ============
+async function fetchCompanyNews(symbol, key) {
+  // Last 7 days
+  const to = new Date();
+  const from = new Date(); from.setDate(from.getDate() - 7);
+  const fmt = (d) => d.toISOString().split('T')[0];
+  try {
+    const res = await fetch(`https://finnhub.io/api/v1/company-news?symbol=${symbol}&from=${fmt(from)}&to=${fmt(to)}&token=${key.trim()}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (Array.isArray(data) ? data : []).slice(0, 8).map(n => ({
+      headline: n.headline,
+      url: n.url,
+      source: n.source,
+      datetime: n.datetime,
+      image: n.image,
+      symbol,
+    }));
+  } catch { return []; }
+}
+
+async function fetchGeneralNews(key) {
+  try {
+    const res = await fetch(`https://finnhub.io/api/v1/news?category=general&token=${key.trim()}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (Array.isArray(data) ? data : []).slice(0, 20).map(n => ({
+      headline: n.headline,
+      url: n.url,
+      source: n.source,
+      datetime: n.datetime,
+      image: n.image,
+      symbol: null,
+    }));
+  } catch { return []; }
+}
+
+async function loadNews() {
+  if (state.newsLoading) return;
+  if (!state.apiKey) {
+    state.newsData = { error: 'no_key' };
+    if (state.activeTab === 'news') render();
+    return;
+  }
+  state.newsLoading = true;
+  if (state.activeTab === 'news') render();
+
+  // Fetch general news + news for each holding
+  const [general, ...companyNews] = await Promise.all([
+    fetchGeneralNews(state.apiKey),
+    ...HOLDINGS.map(h => fetchCompanyNews(h.symbol, state.apiKey)),
+  ]);
+
+  // Merge and dedupe by URL
+  const all = [...general, ...companyNews.flat()];
+  const seen = new Set();
+  const unique = all.filter(n => {
+    if (seen.has(n.url)) return false;
+    seen.add(n.url);
+    return true;
+  }).sort((a, b) => b.datetime - a.datetime);
+
+  state.newsData = { items: unique };
+  state.newsLoading = false;
+  if (state.activeTab === 'news') render();
+}
+
+async function refreshPrices() {
+  state.loading = true;
+  state.error = null;
+  updateRefreshButton();
+
+  const newPrices = {};
+  let successCount = 0;
+
+  await Promise.all(HOLDINGS.map(async (h) => {
+    const result = state.apiKey
+      ? await fetchFinnhub(h.symbol, state.apiKey)
+      : await fetchYahoo(h.symbol);
+    if (result) {
+      newPrices[h.symbol] = result;
+      successCount++;
+    }
+  }));
+
+  if (successCount > 0) {
+    state.livePrices = newPrices;
+    state.lastUpdate = new Date();
+  } else {
+    state.error = 'فشل تحديث الأسعار. تحقق من الاتصال أو المفتاح.';
+  }
+  state.loading = false;
+
+  // Market status
+  const now = new Date();
+  const minutesUTC = now.getUTCHours() * 60 + now.getUTCMinutes();
+  const utcDay = now.getUTCDay();
+  state.marketStatus = (utcDay >= 1 && utcDay <= 5 && minutesUTC >= 14 * 60 + 30 && minutesUTC <= 21 * 60)
+    ? 'open' : 'closed';
+
+  render();
+}
+
+// ============ COMPUTE ============
+function getPortfolioData() {
+  return HOLDINGS.map(h => {
+    const live = state.livePrices[h.symbol];
+    const currentPrice = live?.price;
+    const currentValue = currentPrice ? currentPrice * h.shares : h.initialValueUSD;
+    const profit = currentValue - h.costBasisUSD;
+    const profitPct = (profit / h.costBasisUSD) * 100;
+    const dayChange = live?.change ? live.change * h.shares : 0;
+    return {
+      ...h,
+      currentPrice,
+      currentValue,
+      currentValueSAR: currentValue * USD_TO_SAR,
+      costBasisSAR: h.costBasisUSD * USD_TO_SAR,
+      profit,
+      profitSAR: profit * USD_TO_SAR,
+      profitPct,
+      dayChange,
+      dayChangeSAR: dayChange * USD_TO_SAR,
+      isLive: !!currentPrice,
+    };
+  });
+}
+
+function getTotals(data) {
+  const value = data.reduce((s, h) => s + h.currentValue, 0);
+  const cost = data.reduce((s, h) => s + h.costBasisUSD, 0);
+  const dayChange = data.reduce((s, h) => s + h.dayChange, 0);
+  const profit = value - cost;
+  return {
+    valueUSD: value, valueSAR: value * USD_TO_SAR,
+    costUSD: cost, costSAR: cost * USD_TO_SAR,
+    profitUSD: profit, profitSAR: profit * USD_TO_SAR,
+    profitPct: cost > 0 ? (profit / cost) * 100 : 0,
+    dayChangeUSD: dayChange, dayChangeSAR: dayChange * USD_TO_SAR,
+    dayChangePct: value - dayChange > 0 ? (dayChange / (value - dayChange)) * 100 : 0,
+  };
+}
+
+function getSectorData(data, totalSAR) {
+  const sectors = {};
+  data.forEach(h => {
+    if (!sectors[h.sectorAr]) {
+      sectors[h.sectorAr] = { name: h.sectorAr, value: 0, cost: 0, profit: 0, color: h.sectorColor, holdings: [] };
+    }
+    sectors[h.sectorAr].value += h.currentValueSAR;
+    sectors[h.sectorAr].cost += h.costBasisSAR;
+    sectors[h.sectorAr].profit += h.profitSAR;
+    sectors[h.sectorAr].holdings.push(h);
+  });
+  return Object.values(sectors).map(s => ({
+    ...s,
+    pct: totalSAR > 0 ? (s.value / totalSAR) * 100 : 0,
+    profitPct: s.cost > 0 ? (s.profit / s.cost) * 100 : 0,
+  })).sort((a, b) => b.value - a.value);
+}
+
+// ============ RENDER ============
+function updateRefreshButton() {
+  const icon = document.getElementById('refresh-icon');
+  const btn = document.getElementById('refresh-btn');
+  if (state.loading) {
+    icon.classList.add('spinning');
+    btn.disabled = true;
+  } else {
+    icon.classList.remove('spinning');
+    btn.disabled = false;
+  }
+}
+
+function renderHeader() {
+  const live = Object.keys(state.livePrices).length > 0 && !state.loading;
+
+  // Live pill
+  const liveDot = document.getElementById('live-dot');
+  const liveText = document.getElementById('live-text');
+  const livePill = document.getElementById('live-pill');
+  if (live) {
+    liveDot.classList.add('active'); liveDot.classList.remove('offline');
+    liveText.textContent = 'LIVE';
+    livePill.classList.add('pill-live');
+  } else {
+    liveDot.classList.remove('active'); liveDot.classList.add('offline');
+    liveText.textContent = 'OFFLINE';
+    livePill.classList.remove('pill-live');
+  }
+
+  // Market pill
+  const marketPill = document.getElementById('market-pill');
+  if (state.marketStatus === 'open') {
+    marketPill.textContent = '🟢 السوق مفتوح';
+    marketPill.className = 'pill pill-live';
+  } else if (state.marketStatus === 'closed') {
+    marketPill.textContent = '⚫ السوق مغلق';
+    marketPill.className = 'pill pill-closed';
+  } else {
+    marketPill.className = 'pill hidden';
+  }
+
+  // Time pill
+  if (state.lastUpdate) {
+    const timePill = document.getElementById('time-pill');
+    timePill.classList.remove('hidden');
+    document.getElementById('time-text').textContent = state.lastUpdate.toLocaleTimeString('en-US', { hour12: false });
+  }
+
+  // Error
+  const errBar = document.getElementById('error-bar');
+  if (state.error) {
+    errBar.classList.remove('hidden');
+    errBar.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>${state.error}</span>`;
+  } else {
+    errBar.classList.add('hidden');
+  }
+
+  // Source label
+  document.getElementById('source-label').textContent = state.apiKey ? 'Finnhub' : 'Yahoo Finance';
+
+  // Settings panel
+  document.getElementById('settings-panel').classList.toggle('hidden', !state.showSettings);
+  document.getElementById('api-key-input').value = state.apiKey;
+}
+
+function renderHero(totals, isProfit, isDayUp) {
+  const hero = document.getElementById('hero');
+  const glowClass = isProfit ? 'profit' : 'loss';
+  const dayChip = totals.dayChangeUSD !== 0
+    ? `<div class="day-chip ${isDayUp ? 'up' : 'down'}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          ${isDayUp ? '<path d="M7 17L17 7M7 7h10v10"/>' : '<path d="M7 7l10 10M17 7v10H7"/>'}
+        </svg>
+        <span class="ltr">${fmtPct(totals.dayChangePct)}</span>
+        <span style="opacity:0.6">اليوم</span>
+      </div>`
+    : '';
+
+  hero.innerHTML = `
+    <div class="hero-glow ${glowClass}"></div>
+    <div class="hero-header">
+      <span class="hero-label">القيمة الإجمالية للمحفظة</span>
+      ${dayChip}
+    </div>
+    <div style="display:flex;align-items:baseline;flex-wrap:wrap;gap:8px;">
+      <h2 class="hero-value">${fmtNum(totals.valueSAR)}</h2>
+      <span class="hero-currency">ر.س</span>
+    </div>
+    <p class="hero-usd">≈ ${fmtUSD(totals.valueUSD)}</p>
+    <div class="hero-grid">
+      <div>
+        <div class="metric-label">التكلفة</div>
+        <div class="metric-value">${fmtNum(totals.costSAR)}</div>
+        <div class="metric-sub">≈ ${fmtUSD(totals.costUSD)}</div>
+      </div>
+      <div>
+        <div class="metric-label">الربح</div>
+        <div class="metric-value ${isProfit ? 'profit' : 'loss'}">${isProfit ? '+' : ''}${fmtNum(totals.profitSAR)}</div>
+        <div class="metric-sub">≈ ${isProfit ? '+' : ''}${fmtUSD(totals.profitUSD)}</div>
+      </div>
+      <div>
+        <div class="metric-label">نسبة الربح</div>
+        <div class="metric-value ${isProfit ? 'profit' : 'loss'}">${fmtPct(totals.profitPct)}</div>
+        <div class="metric-sub">على التكلفة</div>
+      </div>
+      <div>
+        <div class="metric-label">عدد الأسهم</div>
+        <div class="metric-value">${HOLDINGS.length}</div>
+        <div class="metric-sub">في المحفظة</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderOverview(data, totals) {
+  const sorted = [...data].sort((a, b) => b.profitPct - a.profitPct);
+  const topGainer = sorted[0];
+  const topLoser = sorted[sorted.length - 1];
+  const biggest = [...data].sort((a, b) => b.currentValueSAR - a.currentValueSAR)[0];
+
+  const card = (color, title, iconSvg, h, value, sub) => `
+    <div class="highlight-card highlight-${color}">
+      <div class="highlight-header">
+        <span class="highlight-title">${title}</span>
+        <span class="highlight-icon-${color}">${iconSvg}</span>
+      </div>
+      <div class="highlight-stock">
+        <span class="highlight-symbol">${h.symbol}</span>
+        <span class="highlight-name">${h.nameAr}</span>
+      </div>
+      <div class="highlight-value">${value}</div>
+      <div class="highlight-sub">${sub}</div>
+    </div>
+  `;
+
+  const trophyIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>';
+  const walletIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>';
+  const warnIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="top-grid">
+        ${card('emerald', 'أعلى ربح', trophyIcon, topGainer, fmtPct(topGainer.profitPct), `+${fmtNum(topGainer.profitSAR)} ر.س`)}
+        ${card('blue', 'أكبر مركز', walletIcon, biggest, `${((biggest.currentValueSAR / totals.valueSAR) * 100).toFixed(1)}%`, `${fmtNum(biggest.currentValueSAR)} ر.س`)}
+        ${card(topLoser.profit < 0 ? 'red' : 'amber', topLoser.profit < 0 ? 'أكبر خسارة' : 'أقل ربح', warnIcon, topLoser, fmtPct(topLoser.profitPct), `${topLoser.profit >= 0 ? '+' : ''}${fmtNum(topLoser.profitSAR)} ر.س`)}
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          توزيع المحفظة حسب الأسهم
+        </div>
+        <div class="chart-row">
+          <div class="chart-container">
+            <canvas id="alloc-chart"></canvas>
+          </div>
+          <div class="legend">
+            ${data.sort((a,b)=>b.currentValueSAR-a.currentValueSAR).map(h => `
+              <div class="legend-item">
+                <div class="legend-left">
+                  <div class="legend-dot" style="background:${h.sectorColor};"></div>
+                  <span class="legend-symbol">${h.symbol}</span>
+                </div>
+                <span class="legend-pct">${((h.currentValueSAR / totals.valueSAR) * 100).toFixed(1)}%</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Render chart
+  setTimeout(() => {
+    const ctx = document.getElementById('alloc-chart');
+    if (!ctx) return;
+    if (allocChart) allocChart.destroy();
+    const cc = chartColors();
+    const sortedData = [...data].sort((a, b) => b.currentValueSAR - a.currentValueSAR);
+    allocChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: sortedData.map(h => h.symbol),
+        datasets: [{
+          data: sortedData.map(h => h.currentValueSAR),
+          backgroundColor: sortedData.map(h => h.sectorColor),
+          borderColor: cc.cellBorder,
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: cc.tooltipBg,
+            borderColor: cc.tooltipBorder,
+            borderWidth: 1,
+            titleColor: cc.tooltipText,
+            bodyColor: cc.tooltipText,
+            padding: 12,
+            callbacks: {
+              label: (ctx) => ` ${fmtNum(ctx.parsed)} ر.س`
+            }
+          }
+        }
+      }
+    });
+  }, 50);
+}
+
+function renderPositions(data) {
+  const sorted = [...data].sort((a, b) => b.currentValueSAR - a.currentValueSAR);
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="positions-header">
+        <div class="positions-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          جميع المراكز (${data.length})
+        </div>
+        <span class="positions-hint">اضغط للتفاصيل</span>
+      </div>
+      ${sorted.map(h => {
+        const isProfit = h.profit >= 0;
+        const expanded = state.expandedStock === h.symbol;
+        return `
+          <div class="stock-row">
+            <button class="stock-main" data-stock="${h.symbol}">
+              <div class="stock-left">
+                <div class="stock-badge" style="background:${h.sectorColor}22;color:${h.sectorColor};border:1px solid ${h.sectorColor}44;">
+                  ${h.symbol.slice(0, 2)}
+                </div>
+                <div class="stock-info">
+                  <div class="stock-symbol-row">
+                    ${h.isLive ? '<span class="live-mini"></span>' : ''}
+                    <span class="stock-symbol">${h.symbol}</span>
+                  </div>
+                  <div class="stock-name">${h.nameAr}</div>
+                </div>
+              </div>
+              <div class="stock-right">
+                <div class="stock-value">${fmtNum(h.currentValueSAR)} ر.س</div>
+                <div class="stock-pl ${isProfit ? 'profit' : 'loss'}">
+                  ${isProfit ? '+' : ''}${fmtNum(h.profitSAR)} (${fmtPct(h.profitPct)})
+                </div>
+              </div>
+            </button>
+            ${expanded ? `
+              <div class="stock-details">
+                <div>
+                  <div class="detail-label">الكمية</div>
+                  <div class="detail-value">${fmtNum(h.shares, 4)}</div>
+                </div>
+                <div>
+                  <div class="detail-label">سعر السهم الحالي</div>
+                  <div class="detail-value">${h.currentPrice ? '$' + fmtNum(h.currentPrice) : '—'}</div>
+                </div>
+                <div>
+                  <div class="detail-label">التكلفة</div>
+                  <div class="detail-value">${fmtNum(h.costBasisSAR)} ر.س</div>
+                  <div class="detail-sub">≈ ${fmtUSD(h.costBasisUSD)}</div>
+                </div>
+                <div>
+                  <div class="detail-label">القيمة الحالية</div>
+                  <div class="detail-value">${fmtNum(h.currentValueSAR)} ر.س</div>
+                  <div class="detail-sub">≈ ${fmtUSD(h.currentValue)}</div>
+                </div>
+                <div>
+                  <div class="detail-label">الربح/الخسارة</div>
+                  <div class="detail-value" style="color:${isProfit ? 'var(--emerald-light)' : 'var(--red-light)'}">${isProfit ? '+' : ''}${fmtNum(h.profitSAR)} ر.س</div>
+                  <div class="detail-sub">${isProfit ? '+' : ''}${fmtUSD(h.profit)}</div>
+                </div>
+                <div>
+                  <div class="detail-label">القطاع</div>
+                  <div class="detail-value" style="direction:rtl;text-align:right;">${h.sectorAr}</div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  // Click handlers
+  document.querySelectorAll('[data-stock]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sym = btn.dataset.stock;
+      state.expandedStock = state.expandedStock === sym ? null : sym;
+      renderPositions(getPortfolioData());
+    });
+  });
+}
+
+function renderSectors(data, totals) {
+  const sectorData = getSectorData(data, totals.valueSAR);
+
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          توزيع القطاعات
+        </div>
+        <div class="chart-container" style="height:320px;">
+          <canvas id="sector-chart"></canvas>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        ${sectorData.map(s => {
+          const isProfit = s.profit >= 0;
+          return `
+            <div class="sector-card" style="background:${s.color}10;border-color:${s.color}40;">
+              <div class="sector-header">
+                <div class="sector-left">
+                  <div class="sector-color" style="background:${s.color};"></div>
+                  <div>
+                    <div class="sector-name">${s.name}</div>
+                    <div class="sector-count">${s.holdings.length} سهم</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="sector-value">${fmtNum(s.value)} ر.س</div>
+                  <div class="sector-pct">${s.pct.toFixed(2)}% من المحفظة</div>
+                </div>
+              </div>
+              <div class="sector-metrics">
+                <div>
+                  <div class="sector-metric-label">التكلفة</div>
+                  <div class="sector-metric-value">${fmtNum(s.cost)}</div>
+                </div>
+                <div>
+                  <div class="sector-metric-label">الربح</div>
+                  <div class="sector-metric-value" style="color:${isProfit ? 'var(--emerald-light)' : 'var(--red-light)'}">${isProfit ? '+' : ''}${fmtNum(s.profit)}</div>
+                </div>
+                <div>
+                  <div class="sector-metric-label">النسبة</div>
+                  <div class="sector-metric-value" style="color:${isProfit ? 'var(--emerald-light)' : 'var(--red-light)'}">${fmtPct(s.profitPct)}</div>
+                </div>
+              </div>
+              <div class="sector-tags">
+                ${s.holdings.map(h => `<span class="sector-tag">${h.symbol}</span>`).join('')}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const ctx = document.getElementById('sector-chart');
+    if (!ctx) return;
+    if (sectorChart) sectorChart.destroy();
+    const cc = chartColors();
+    sectorChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: sectorData.map(s => s.name),
+        datasets: [{
+          data: sectorData.map(s => s.value),
+          backgroundColor: sectorData.map(s => s.color),
+          borderColor: cc.cellBorder,
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: cc.legendText, font: { family: 'Tajawal', size: 12 }, padding: 12 }
+          },
+          tooltip: {
+            backgroundColor: cc.tooltipBg,
+            borderColor: cc.tooltipBorder,
+            titleColor: cc.tooltipText,
+            bodyColor: cc.tooltipText,
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: (ctx) => ` ${fmtNum(ctx.parsed)} ر.س (${((ctx.parsed/totals.valueSAR)*100).toFixed(1)}%)`
+            }
+          }
+        }
+      }
+    });
+  }, 50);
+}
+
+function renderPerformance(data) {
+  const sorted = [...data].sort((a, b) => b.profitPct - a.profitPct);
+  const maxAbs = Math.max(...sorted.map(x => Math.abs(x.profitPct)));
+
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="card">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          الربح/الخسارة لكل سهم (ر.س)
+        </div>
+        <div class="chart-container" style="height:320px;">
+          <canvas id="perf-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          ترتيب الأداء (%)
+        </div>
+        ${sorted.map((h, i) => {
+          const isProfit = h.profit >= 0;
+          const widthPct = (Math.abs(h.profitPct) / maxAbs) * 100;
+          return `
+            <div class="perf-row">
+              <div class="perf-rank">${i + 1}</div>
+              <div class="perf-symbol">${h.symbol}</div>
+              <div class="perf-bar-bg">
+                <div class="perf-bar ${isProfit ? 'profit' : 'loss'}" style="width:${widthPct}%;"></div>
+              </div>
+              <div class="perf-value ${isProfit ? 'profit' : 'loss'}">${fmtPct(h.profitPct)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const ctx = document.getElementById('perf-chart');
+    if (!ctx) return;
+    if (perfChart) perfChart.destroy();
+    const cc = chartColors();
+    perfChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: sorted.map(h => h.symbol),
+        datasets: [{
+          data: sorted.map(h => h.profitSAR),
+          backgroundColor: sorted.map(h => h.profit >= 0 ? '#10B981' : '#EF4444'),
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: cc.tooltipBg,
+            borderColor: cc.tooltipBorder,
+            titleColor: cc.tooltipText,
+            bodyColor: cc.tooltipText,
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: (ctx) => ` ${fmtNum(ctx.parsed.y)} ر.س`
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { color: cc.text, font: { family: 'Tajawal' } }, grid: { display: false } },
+          y: { ticks: { color: cc.text, font: { family: 'Tajawal' } }, grid: { color: cc.grid } }
+        }
+      }
+    });
+  }, 50);
+}
+
+function renderHistory() {
+  const data = state.historyData;
+  const loading = state.historyLoading;
+  const error = state.historyError;
+
+  const rangeBtns = [
+    { v: '1mo', label: '30 يوم' },
+    { v: '3mo', label: '3 شهور' },
+    { v: '6mo', label: '6 شهور' },
+    { v: '1y', label: 'سنة' },
+  ];
+  const modeBtns = [
+    { v: 'pct', label: '%' },
+    { v: 'sar', label: 'ر.س' },
+  ];
+
+  let statsHTML = '';
+  let chartArea;
+
+  if (loading) {
+    chartArea = `
+      <div class="history-loading">
+        <div style="text-align:center;">
+          <div style="display:inline-block;width:24px;height:24px;border:2px solid var(--border);border-top-color:#10B981;border-radius:50%;animation:spin 0.8s linear infinite;margin-bottom:12px;"></div>
+          <div>جاري تحميل البيانات التاريخية...</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;">قد يأخذ 10-20 ثانية</div>
+        </div>
+      </div>
+    `;
+  } else if (error) {
+    chartArea = `
+      <div class="history-loading">
+        <div style="text-align:center;max-width:300px;">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div style="color:var(--text);font-weight:600;margin-bottom:8px;">${error}</div>
+          <button class="btn-save" id="retry-history" style="margin-top:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            حاول مرة أخرى
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (data && data.portfolio.length > 0) {
+    const first = data.portfolio[0];
+    const last = data.portfolio[data.portfolio.length - 1];
+    const change = last.valueSAR - first.valueSAR;
+    const changePct = (change / first.valueSAR) * 100;
+    const high = data.portfolio.reduce((m, p) => p.valueSAR > m.valueSAR ? p : m, first);
+    const low = data.portfolio.reduce((m, p) => p.valueSAR < m.valueSAR ? p : m, first);
+
+    let spyComparison = '';
+    if (data.spy.length > 0 && state.showSPY) {
+      const spyFirst = data.spy[0].price;
+      const spyLast = data.spy[data.spy.length - 1].price;
+      const spyChangePct = ((spyLast - spyFirst) / spyFirst) * 100;
+      const beating = changePct > spyChangePct;
+      spyComparison = `
+        <div class="stat-card">
+          <div class="stat-card-label">مقارنة بـ S&P 500</div>
+          <div class="vs-badge ${beating ? 'win' : 'lose'}" style="margin-top:4px;">
+            ${beating ? '▲' : '▼'} ${fmtPct(changePct - spyChangePct)}
+          </div>
+          <div class="stat-card-sub">S&P: ${fmtPct(spyChangePct)}</div>
+        </div>
+      `;
+    }
+
+    statsHTML = `
+      <div class="history-stats">
+        <div class="stat-card">
+          <div class="stat-card-label">التغيّر في الفترة</div>
+          <div class="stat-card-value" style="color:${changePct >= 0 ? 'var(--emerald-light)' : 'var(--red-light)'}">${fmtPct(changePct)}</div>
+          <div class="stat-card-sub">${change >= 0 ? '+' : ''}${fmtNum(change)} ر.س</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">أعلى قيمة</div>
+          <div class="stat-card-value">${fmtNum(high.valueSAR)}</div>
+          <div class="stat-card-sub">${high.date.toLocaleDateString('en-GB')}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">أدنى قيمة</div>
+          <div class="stat-card-value">${fmtNum(low.valueSAR)}</div>
+          <div class="stat-card-sub">${low.date.toLocaleDateString('en-GB')}</div>
+        </div>
+        ${spyComparison}
+      </div>
+      ${data.missingStocks > 0 ? `<div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);font-size:12px;color:#FCD34D;">⚠️ تعذّر تحميل بيانات ${data.missingStocks} من الأسهم — قد يكون الرسم غير دقيق</div>` : ''}
+    `;
+    chartArea = `<canvas id="history-chart"></canvas>`;
+  } else {
+    chartArea = `
+      <div class="history-loading">
+        <div style="text-align:center;">
+          <div>جاري التحميل...</div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="card">
+        <div class="history-controls">
+          <div class="card-title" style="margin:0;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            أداء المحفظة التاريخي
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="toggle-group">
+              ${rangeBtns.map(b => `<button class="toggle-btn ${state.historyRange === b.v ? 'active' : ''}" data-range="${b.v}">${b.label}</button>`).join('')}
+            </div>
+            <div class="toggle-group">
+              ${modeBtns.map(b => `<button class="toggle-btn ${state.historyMode === b.v ? 'active' : ''}" data-mode="${b.v}">${b.label}</button>`).join('')}
+            </div>
+            <button class="toggle-btn" id="spy-toggle" style="border:1px solid var(--border);background:${state.showSPY ? '#fff' : 'rgba(255,255,255,0.04)'};color:${state.showSPY ? '#0F172A' : 'var(--text-muted)'};border-radius:10px;padding:6px 14px;">
+              S&P 500
+            </button>
+          </div>
+        </div>
+        <div class="history-chart-wrap">
+          ${chartArea}
+        </div>
+        ${statsHTML}
+      </div>
+    </div>
+  `;
+
+  // Event handlers
+  document.querySelectorAll('[data-range]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.historyRange = b.dataset.range;
+      state.historyData = null;
+      state.historyError = null;
+      loadHistory();
+    });
+  });
+  document.querySelectorAll('[data-mode]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.historyMode = b.dataset.mode;
+      render();
+    });
+  });
+  document.getElementById('spy-toggle')?.addEventListener('click', () => {
+    state.showSPY = !state.showSPY;
+    render();
+  });
+  document.getElementById('retry-history')?.addEventListener('click', () => {
+    state.historyError = null;
+    state.historyData = null;
+    loadHistory();
+  });
+
+  // Render chart (only if we have data)
+  if (data && data.portfolio.length > 0 && !loading && !error) {
+    setTimeout(() => {
+      const ctx = document.getElementById('history-chart');
+      if (!ctx) return;
+      if (historyChart) historyChart.destroy();
+
+      const labels = data.portfolio.map(p => p.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
+
+      let datasets = [];
+      if (state.historyMode === 'pct') {
+        const first = data.portfolio[0].valueSAR;
+        const portPct = data.portfolio.map(p => ((p.valueSAR - first) / first) * 100);
+        datasets.push({
+          label: 'المحفظة',
+          data: portPct,
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#10B981',
+        });
+        if (state.showSPY && data.spy.length > 0) {
+          const spyFirst = data.spy[0].price;
+          const spyPct = data.spy.map(p => ((p.price - spyFirst) / spyFirst) * 100);
+          // Pad with nulls if SPY has fewer points than portfolio (or vice versa)
+          while (spyPct.length < labels.length) spyPct.unshift(null);
+          datasets.push({
+            label: 'S&P 500',
+            data: spyPct.slice(-labels.length),
+            borderColor: '#94A3B8',
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            borderDash: [6, 4],
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+          });
+        }
+      } else {
+        datasets.push({
+          label: 'المحفظة (ر.س)',
+          data: data.portfolio.map(p => p.valueSAR),
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+        });
+      }
+
+      historyChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              display: datasets.length > 1,
+              position: 'top',
+              labels: { color: chartColors().legendText, font: { family: 'Tajawal', size: 12 }, usePointStyle: true, padding: 16 }
+            },
+            tooltip: {
+              backgroundColor: chartColors().tooltipBg,
+              borderColor: chartColors().tooltipBorder,
+              titleColor: chartColors().tooltipText,
+              bodyColor: chartColors().tooltipText,
+              borderWidth: 1,
+              padding: 12,
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.y;
+                  if (v == null) return null;
+                  return ` ${ctx.dataset.label}: ${state.historyMode === 'pct' ? fmtPct(v) : fmtNum(v) + ' ر.س'}`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: { ticks: { color: chartColors().text, font: { family: 'Tajawal', size: 11 }, maxTicksLimit: 8 }, grid: { display: false }, reverse: false },
+            y: {
+              ticks: {
+                color: chartColors().text, font: { family: 'Tajawal', size: 11 },
+                callback: (v) => state.historyMode === 'pct' ? `${v.toFixed(1)}%` : fmtNum(v, 0)
+              },
+              grid: { color: chartColors().grid }
+            }
+          }
+        }
+      });
+    }, 50);
+  }
+}
+
+function renderNews() {
+  const news = state.newsData;
+  const loading = state.newsLoading;
+
+  if (!state.apiKey || news?.error === 'no_key') {
+    document.getElementById('tab-content').innerHTML = `
+      <div class="fade-in card">
+        <div class="news-empty">
+          <div class="news-empty-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+          </div>
+          <p style="font-weight:700;color:var(--text);margin-bottom:8px;">الأخبار تحتاج مفتاح Finnhub</p>
+          <p>أضف مفتاح API من ⚙️ الإعدادات لعرض آخر أخبار أسهمك ومستجدات السوق.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  let body = '';
+  if (loading) {
+    body = '<div class="news-empty"><div style="font-size:14px;">جاري تحميل الأخبار...</div></div>';
+  } else if (news?.items?.length) {
+    const filtered = state.newsFilter === 'all'
+      ? news.items
+      : news.items.filter(n => n.symbol === state.newsFilter);
+
+    body = filtered.length === 0
+      ? '<div class="news-empty">لا توجد أخبار لهذا السهم في آخر 7 أيام.</div>'
+      : filtered.slice(0, 30).map(n => {
+          const date = new Date(n.datetime * 1000);
+          const hoursAgo = Math.floor((Date.now() - date.getTime()) / 3600000);
+          const timeStr = hoursAgo < 24
+            ? `قبل ${hoursAgo} ساعة`
+            : `قبل ${Math.floor(hoursAgo / 24)} يوم`;
+          return `
+            <a href="${n.url}" target="_blank" rel="noopener" class="news-item">
+              ${n.image
+                ? `<div class="news-thumb" style="background-image:url('${n.image.replace(/'/g, '%27')}');"></div>`
+                : `<div class="news-thumb" style="display:flex;align-items:center;justify-content:center;color:var(--text-dim);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16"/></svg></div>`
+              }
+              <div class="news-content">
+                <div class="news-headline">${n.headline}</div>
+                <div class="news-meta">
+                  <span class="news-source">${n.source}</span>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    ${n.symbol ? `<span class="news-symbol">${n.symbol}</span>` : ''}
+                    <span>${timeStr}</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+  } else {
+    body = '<div class="news-empty">لم نعثر على أخبار. حاول التحديث.</div>';
+  }
+
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="news-tabs">
+        <button class="news-filter ${state.newsFilter === 'all' ? 'active' : ''}" data-filter="all">الكل</button>
+        ${HOLDINGS.map(h => `<button class="news-filter ${state.newsFilter === h.symbol ? 'active' : ''}" data-filter="${h.symbol}">${h.symbol}</button>`).join('')}
+      </div>
+      ${body}
+    </div>
+  `;
+
+  document.querySelectorAll('[data-filter]').forEach(b => {
+    b.addEventListener('click', () => {
+      state.newsFilter = b.dataset.filter;
+      render();
+    });
+  });
+}
+
+function renderTabs() {
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === state.activeTab);
+  });
+}
+
+function render() {
+  updateRefreshButton();
+  renderHeader();
+
+  const data = getPortfolioData();
+  const totals = getTotals(data);
+  const isProfit = totals.profitUSD >= 0;
+  const isDayUp = totals.dayChangeUSD >= 0;
+
+  renderHero(totals, isProfit, isDayUp);
+  renderTabs();
+
+  switch (state.activeTab) {
+    case 'overview': renderOverview(data, totals); break;
+    case 'positions': renderPositions(data); break;
+    case 'sectors': renderSectors(data, totals); break;
+    case 'performance': renderPerformance(data); break;
+    case 'history': renderHistory(); break;
+    case 'news': renderNews(); break;
+  }
+}
+
+// ============ EVENTS ============
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    state.activeTab = t.dataset.tab;
+    state.expandedStock = null;
+    render();
+    // Lazy-load on first visit
+    if (state.activeTab === 'history' && !state.historyData && !state.historyLoading) {
+      loadHistory();
+    }
+    if (state.activeTab === 'news' && !state.newsData && !state.newsLoading && state.apiKey) {
+      loadNews();
+    }
+  });
+});
+
+document.getElementById('refresh-btn').addEventListener('click', refreshPrices);
+
+document.getElementById('theme-btn').addEventListener('click', () => {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  try { localStorage.setItem('theme', state.theme); } catch (e) {}
+  applyTheme();
+  render(); // re-render to rebuild charts with new theme colors
+});
+
+document.getElementById('settings-btn').addEventListener('click', () => {
+  state.showSettings = !state.showSettings;
+  document.getElementById('settings-panel').classList.toggle('hidden', !state.showSettings);
+});
+
+document.getElementById('close-settings').addEventListener('click', () => {
+  state.showSettings = false;
+  document.getElementById('settings-panel').classList.add('hidden');
+});
+
+document.getElementById('save-key-btn').addEventListener('click', () => {
+  const key = document.getElementById('api-key-input').value.trim();
+  state.apiKey = key;
+  try { localStorage.setItem('finnhub_api_key', key); } catch (e) {}
+  state.showSettings = false;
+  document.getElementById('settings-panel').classList.add('hidden');
+  // Reset news to force reload with new key
+  state.newsData = null;
+  refreshPrices();
+  if (state.activeTab === 'news') loadNews();
+});
+
+// ============ PWA SETUP ============
+(function setupPWA() {
+  // Inject manifest dynamically (data URI manifests aren't reliable across browsers)
+  const ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981"/><stop offset="1" stop-color="#047857"/></linearGradient></defs><rect width="512" height="512" rx="112" fill="url(#g)"/><path d="M368 208h-22V164c0-11.7-9.5-21.2-21.2-21.2H164c-23.5 0-42.4 19.1-42.4 42.4v159.6c0 23.5 19.1 42.4 42.4 42.4H368c11.7 0 21.2-9.5 21.2-21.2V229.2c0-11.7-9.5-21.2-21.2-21.2zm-32 85.4c-11.7 0-21.2-9.5-21.2-21.2s9.5-21.2 21.2-21.2 21.2 9.5 21.2 21.2-9.5 21.2-21.2 21.2z" fill="white"/></svg>`;
+  const ICON_URL = `data:image/svg+xml;base64,${btoa(ICON_SVG)}`;
+
+  try {
+    const manifest = {
+      name: 'محفظتي · Portfolio Tracker',
+      short_name: 'محفظتي',
+      description: 'تتبع محفظة الأسهم بأسعار حية',
+      start_url: '.',
+      scope: '.',
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#020617',
+      theme_color: '#020617',
+      lang: 'ar',
+      dir: 'rtl',
+      icons: [
+        { src: ICON_URL, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+        { src: ICON_URL, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' },
+      ],
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = url;
+    document.head.appendChild(link);
+  } catch (e) { console.warn('Manifest setup failed', e); }
+
+  // Service worker via Blob URL (basic — enables installability on Chrome/Android)
+  if ('serviceWorker' in navigator) {
+    try {
+      const swCode = `
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+        self.addEventListener('fetch', e => {
+          // Pass through — no caching to avoid stale data
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+    } catch (e) {}
+  }
+
+  // Install prompt (Chrome / Edge)
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    state.deferredInstall = e;
+    showInstallBanner();
+  });
+
+  // iOS standalone detection
+  const isIOSStandalone = window.navigator.standalone === true;
+  const isAndroidStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+  // Show iOS install hint if iOS Safari and not already installed
+  const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  if (isIOS && !isIOSStandalone) {
+    const dismissed = localStorage.getItem('install_dismissed');
+    if (!dismissed) {
+      setTimeout(showIOSInstallBanner, 3000);
+    }
+  }
+
+  function showInstallBanner() {
+    if (document.getElementById('install-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'install-banner';
+    banner.className = 'install-banner';
+    banner.innerHTML = `
+      <div class="install-banner-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </div>
+      <div class="install-banner-content">
+        <div class="install-banner-title">ثبّت التطبيق</div>
+        <div class="install-banner-sub">سهولة وصول مع تجربة كاملة</div>
+      </div>
+      <button class="btn-save" id="install-go">ثبّت</button>
+      <button class="install-banner-close" id="install-close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    `;
+    document.body.appendChild(banner);
+    document.getElementById('install-go').addEventListener('click', async () => {
+      if (state.deferredInstall) {
+        state.deferredInstall.prompt();
+        await state.deferredInstall.userChoice;
+        state.deferredInstall = null;
+      }
+      banner.remove();
+    });
+    document.getElementById('install-close').addEventListener('click', () => {
+      try { localStorage.setItem('install_dismissed', '1'); } catch (e) {}
+      banner.remove();
+    });
+  }
+
+  function showIOSInstallBanner() {
+    if (document.getElementById('install-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'install-banner';
+    banner.className = 'install-banner';
+    banner.innerHTML = `
+      <div class="install-banner-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      </div>
+      <div class="install-banner-content">
+        <div class="install-banner-title">ثبّت على الشاشة الرئيسية</div>
+        <div class="install-banner-sub">اضغط زر المشاركة ⬆️ ثم "إضافة للشاشة الرئيسية"</div>
+      </div>
+      <button class="install-banner-close" id="install-close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    `;
+    document.body.appendChild(banner);
+    document.getElementById('install-close').addEventListener('click', () => {
+      try { localStorage.setItem('install_dismissed', '1'); } catch (e) {}
+      banner.remove();
+    });
+  }
+})();
+
+// ============ LOCK SCREEN ============
+const SITE_PASSWORD = 'WA-66';
+
+function setupLockScreen() {
+  const lockScreen = document.getElementById('lock-screen');
+  const lockInput = document.getElementById('lock-input');
+  const lockBtn = document.getElementById('lock-btn');
+  const lockError = document.getElementById('lock-error');
+  const lockBox = lockScreen.querySelector('.lock-box');
+
+  // Already unlocked this session?
+  let unlocked = false;
+  try { unlocked = sessionStorage.getItem('site_unlocked') === '1'; } catch (e) {}
+
+  if (unlocked) {
+    lockScreen.style.display = 'none';
+    return;
+  }
+
+  // Focus input
+  setTimeout(() => lockInput.focus(), 300);
+
+  function unlock() {
+    try { sessionStorage.setItem('site_unlocked', '1'); } catch (e) {}
+    lockScreen.classList.add('unlocked');
+    setTimeout(() => { lockScreen.style.display = 'none'; }, 450);
+  }
+
+  function tryUnlock() {
+    if (lockInput.value === SITE_PASSWORD) {
+      lockError.classList.add('hidden');
+      unlock();
+    } else {
+      lockError.classList.remove('hidden');
+      lockInput.value = '';
+      lockBox.classList.remove('shake');
+      void lockBox.offsetWidth; // reflow to restart animation
+      lockBox.classList.add('shake');
+      lockInput.focus();
+    }
+  }
+
+  lockBtn.addEventListener('click', tryUnlock);
+  lockInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') tryUnlock();
+  });
+}
+
+// ============ INIT ============
+applyTheme();
+setupLockScreen();
+render();
+refreshPrices();
+setInterval(refreshPrices, REFRESH_MS);
+</script>
+
+</body>
+</html>
