@@ -707,7 +707,7 @@
     <h1 class="lock-title">محفظتي</h1>
     <p class="lock-subtitle">أدخل كلمة السر للدخول</p>
     <div class="lock-input-wrap">
-      <input type="password" id="lock-input" class="lock-input" placeholder="كلمة السر" autocomplete="off" />
+      <input type="text" id="lock-input" class="lock-input" placeholder="كلمة السر" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" />
       <button id="lock-btn" class="lock-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
@@ -1413,29 +1413,6 @@ function renderHero(totals, isProfit, isDayUp) {
     <p class="hero-usd">≈ ${fmtUSD(totals.valueUSD)}</p>
     ${extBanner}
     <div class="hero-grid">
-      <div>
-        <div class="metric-label">التكلفة</div>
-        <div class="metric-value">${fmtNum(totals.costSAR)}</div>
-        <div class="metric-sub">≈ ${fmtUSD(totals.costUSD)}</div>
-      </div>
-      <div>
-        <div class="metric-label">الربح</div>
-        <div class="metric-value ${isProfit ? 'profit' : 'loss'}">${isProfit ? '+' : ''}${fmtNum(totals.profitSAR)}</div>
-        <div class="metric-sub">≈ ${isProfit ? '+' : ''}${fmtUSD(totals.profitUSD)}</div>
-      </div>
-      <div>
-        <div class="metric-label">نسبة الربح</div>
-        <div class="metric-value ${isProfit ? 'profit' : 'loss'}">${fmtPct(totals.profitPct)}</div>
-        <div class="metric-sub">على التكلفة</div>
-      </div>
-      <div>
-        <div class="metric-label">عدد الأسهم</div>
-        <div class="metric-value">${HOLDINGS.length}</div>
-        <div class="metric-sub">في المحفظة</div>
-      </div>
-    </div>
-  `;
-}
       <div>
         <div class="metric-label">التكلفة</div>
         <div class="metric-value">${fmtNum(totals.costSAR)}</div>
@@ -2383,6 +2360,22 @@ document.getElementById('save-key-btn').addEventListener('click', () => {
 // ============ LOCK SCREEN ============
 const SITE_PASSWORD = 'WA-66';
 
+// Normalize input so Arabic/Persian digits, dash variants, spaces, and
+// case differences don't block a correct password.
+function normalizePassword(s) {
+  return (s || '')
+    .trim()
+    // Arabic-Indic digits ٠-٩  →  0-9
+    .replace(/[\u0660-\u0669]/g, d => String(d.charCodeAt(0) - 0x0660))
+    // Persian digits ۰-۹  →  0-9
+    .replace(/[\u06F0-\u06F9]/g, d => String(d.charCodeAt(0) - 0x06F0))
+    // Any dash variant (en-dash, em-dash, minus, etc.)  →  plain hyphen
+    .replace(/[\u2010-\u2015\u2212\u2043\uFE63\uFF0D]/g, '-')
+    // Remove all spaces
+    .replace(/\s+/g, '')
+    .toUpperCase();
+}
+
 function setupLockScreen() {
   const lockScreen = document.getElementById('lock-screen');
   const lockInput = document.getElementById('lock-input');
@@ -2409,7 +2402,7 @@ function setupLockScreen() {
   }
 
   function tryUnlock() {
-    if (lockInput.value === SITE_PASSWORD) {
+    if (normalizePassword(lockInput.value) === normalizePassword(SITE_PASSWORD)) {
       lockError.classList.add('hidden');
       unlock();
     } else {
