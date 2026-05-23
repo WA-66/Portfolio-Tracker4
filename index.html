@@ -691,6 +691,134 @@
     }
     .scroll-top:active { transform: scale(0.92); }
 
+    /* === MODAL === */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+    .modal {
+      background: var(--bg-1);
+      border: 1px solid var(--border-strong);
+      border-radius: 22px;
+      width: 100%; max-width: 420px;
+      max-height: 88vh; overflow-y: auto;
+      padding: 22px;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .modal-title { font-size: 17px; font-weight: 800; }
+    .modal-field { margin-bottom: 14px; }
+    .modal-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+    .modal-input, .modal-select {
+      width: 100%; padding: 11px 13px;
+      border-radius: 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      color: var(--text); font-size: 14px;
+      outline: none; transition: border-color 0.15s;
+      font-family: inherit;
+    }
+    .modal-input:focus, .modal-select:focus { border-color: var(--emerald); }
+    .modal-input.ltr { direction: ltr; text-align: left; }
+    .modal-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 20px; }
+    .modal-btn {
+      flex: 1; padding: 12px; border-radius: 12px;
+      font-size: 14px; font-weight: 700;
+      transition: filter 0.15s, background 0.15s;
+    }
+    .modal-btn-primary { background: linear-gradient(135deg, #10B981, #047857); color: #fff; }
+    .modal-btn-primary:hover { filter: brightness(1.1); }
+    .modal-btn-ghost { background: var(--bg-elevated); color: var(--text-muted); }
+    .modal-btn-ghost:hover { background: var(--bg-elevated-hover); }
+    .modal-btn-danger { background: rgba(239,68,68,0.12); color: var(--red-light); border: 1px solid rgba(239,68,68,0.3); }
+    .modal-btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .modal-error {
+      font-size: 12px; color: var(--red-light);
+      margin-top: 10px; text-align: center;
+    }
+
+    /* Add button */
+    .add-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 12px;
+      background: linear-gradient(135deg, #10B981, #047857);
+      color: #fff; font-size: 13px; font-weight: 700;
+      transition: filter 0.15s;
+    }
+    .add-btn:hover { filter: brightness(1.1); }
+
+    /* Row action icons */
+    .row-actions { display: flex; gap: 6px; }
+    .row-action {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--bg-elevated);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .row-action:hover { background: var(--bg-elevated-hover); }
+    .row-action.danger:hover { background: rgba(239,68,68,0.18); color: var(--red-light); }
+
+    /* === WEALTH / ASSETS === */
+    .wealth-net {
+      text-align: center; padding: 8px 0 4px;
+    }
+    .wealth-net-label { font-size: 12px; color: var(--text-muted); }
+    .wealth-net-value {
+      font-size: clamp(28px, 6vw, 38px); font-weight: 900;
+      direction: ltr; letter-spacing: -0.02em;
+      background: var(--hero-value-grad);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .wealth-split {
+      display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+      justify-content: center;
+    }
+    .wealth-split-item {
+      flex: 1; min-width: 130px;
+      padding: 12px 14px; border-radius: 14px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      text-align: center;
+    }
+    .asset-group-head {
+      display: flex; align-items: center; gap: 8px;
+      margin: 18px 0 8px; font-size: 14px; font-weight: 700;
+    }
+    .asset-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 13px 15px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; margin-bottom: 8px;
+    }
+    .asset-info { min-width: 0; flex: 1; }
+    .asset-name { font-weight: 700; font-size: 14px; }
+    .asset-note { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .asset-value { font-weight: 700; direction: ltr; font-size: 14px; white-space: nowrap; }
+    .empty-state {
+      text-align: center; padding: 36px 20px;
+      color: var(--text-muted); font-size: 14px;
+    }
+
+    /* Summary card */
+    .summary-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .summary-box {
+      padding: 14px; border-radius: 14px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+    }
+    .summary-box-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+    .summary-box-value { font-size: 17px; font-weight: 800; direction: ltr; }
+    .summary-box-sub { font-size: 11px; color: var(--text-muted); direction: ltr; margin-top: 2px; }
+
     /* === FOOTER === */
     footer {
       max-width: 1280px; margin: 0 auto;
@@ -824,6 +952,10 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
       S&amp;P 500
     </button>
+    <button class="tab" data-tab="wealth">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      ثروتي
+    </button>
     <button class="tab" data-tab="news">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
       أخبار
@@ -843,11 +975,13 @@
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
 </button>
 
+<div id="modal-root"></div>
+
 <script>
 'use strict';
 
 // ============ DATA ============
-const HOLDINGS = [
+const DEFAULT_HOLDINGS = [
   { symbol: 'MRVL', name: 'Marvell Technology', nameAr: 'مارفل تكنولوجي', shares: 1.94, costBasisUSD: 302.87, initialValueUSD: 370.40, sectorAr: 'أشباه موصلات الشبكات', sectorColor: '#60A5FA' },
   { symbol: 'SIMO', name: 'Silicon Motion', nameAr: 'سيليكون موشن', shares: 2, costBasisUSD: 465.98, initialValueUSD: 510.02, sectorAr: 'التخزين والذاكرة', sectorColor: '#10B981' },
   { symbol: 'VICR', name: 'Vicor Corporation', nameAr: 'فايكور', shares: 0.68, costBasisUSD: 166.16, initialValueUSD: 178.69, sectorAr: 'إلكترونيات الطاقة', sectorColor: '#FBBF24' },
@@ -856,6 +990,59 @@ const HOLDINGS = [
   { symbol: 'WDC', name: 'Western Digital', nameAr: 'ويسترن ديجيتال', shares: 2, costBasisUSD: 544.82, initialValueUSD: 956.36, sectorAr: 'التخزين والذاكرة', sectorColor: '#047857' },
   { symbol: 'SNDK', name: 'Sandisk Corporation', nameAr: 'ساندسك', shares: 0.34, costBasisUSD: 200.05, initialValueUSD: 504.01, sectorAr: 'التخزين والذاكرة', sectorColor: '#34D399' },
 ];
+
+// Preset sectors with colors for the add/edit form
+const SECTOR_PRESETS = [
+  { name: 'التخزين والذاكرة', color: '#10B981' },
+  { name: 'أشباه موصلات الشبكات', color: '#60A5FA' },
+  { name: 'إلكترونيات الطاقة', color: '#FBBF24' },
+  { name: 'معدات اختبار الرقائق', color: '#F472B6' },
+  { name: 'تقنية', color: '#A78BFA' },
+  { name: 'طاقة', color: '#F59E0B' },
+  { name: 'مالية', color: '#22D3EE' },
+  { name: 'استهلاكي', color: '#FB7185' },
+  { name: 'صحة', color: '#4ADE80' },
+  { name: 'أخرى', color: '#94A3B8' },
+];
+
+function loadHoldings() {
+  try {
+    const saved = localStorage.getItem('portfolio_holdings');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length >= 0) return parsed;
+    }
+  } catch (e) {}
+  return DEFAULT_HOLDINGS.map(h => ({ ...h }));
+}
+function saveHoldings() {
+  try { localStorage.setItem('portfolio_holdings', JSON.stringify(HOLDINGS)); } catch (e) {}
+}
+
+let HOLDINGS = loadHoldings();
+
+// ---- Other assets (cash, real estate, sukuk, funds...) ----
+const ASSET_TYPES = [
+  { id: 'cash', label: 'نقد وادخار', icon: '💵', color: '#34D399' },
+  { id: 'realestate', label: 'عقار', icon: '🏢', color: '#60A5FA' },
+  { id: 'sukuk', label: 'صكوك', icon: '📜', color: '#FBBF24' },
+  { id: 'fund', label: 'صناديق استثمارية', icon: '📊', color: '#A78BFA' },
+  { id: 'other', label: 'أصول أخرى', icon: '💼', color: '#F472B6' },
+];
+
+function loadAssets() {
+  try {
+    const saved = localStorage.getItem('wealth_assets');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {}
+  return [];
+}
+function saveAssets() {
+  try { localStorage.setItem('wealth_assets', JSON.stringify(state.assets)); } catch (e) {}
+}
 
 const USD_TO_SAR = 3.75;
 const REFRESH_MS = 60000;
@@ -877,12 +1064,19 @@ const state = {
   historyLoading: false,
   historyError: null,
   historyRange: '1mo',     // '1mo' | '3mo' | '6mo' | '1y'
-  historyMode: 'pct',      // 'pct' (% change) | 'sar' (absolute SAR)
+  historyMode: 'pct',      // 'pct' (% change) | 'points'
   showSPY: true,
   // News
   newsData: null,
   newsLoading: false,
   newsFilter: 'all',       // 'all' | symbol
+  // Earnings
+  earningsData: null,
+  earningsLoading: false,
+  // Other assets / wealth
+  assets: loadAssets(),
+  // Modal
+  modal: null,             // { kind: 'stock'|'asset', mode: 'add'|'edit', data }
   // PWA
   deferredInstall: null,
   showInstall: false,
@@ -1496,6 +1690,20 @@ function renderHero(totals, isProfit, isDayUp) {
 }
 
 function renderOverview(data, totals) {
+  // Empty portfolio guard
+  if (data.length === 0) {
+    document.getElementById('tab-content').innerHTML = `
+      <div class="fade-in card">
+        <div class="empty-state">
+          <div style="font-size:36px;margin-bottom:10px;">📊</div>
+          <p style="font-weight:700;color:var(--text);margin-bottom:6px;">محفظتك فارغة</p>
+          <p>روح لتبويب "المراكز" واضغط "إضافة سهم" لتبدأ.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
   const sorted = [...data].sort((a, b) => b.profitPct - a.profitPct);
   const topGainer = sorted[0];
   const topLoser = sorted[sorted.length - 1];
@@ -1520,6 +1728,74 @@ function renderOverview(data, totals) {
   const walletIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>';
   const warnIcon = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
 
+  // Daily / weekly summary
+  const weekAgo = getSnapshotDaysAgo(7);
+  const dayUp = totals.dayChangeUSD >= 0;
+  let weekHTML;
+  if (weekAgo && weekAgo > 0) {
+    const weekChange = totals.valueSAR - weekAgo;
+    const weekPct = (weekChange / weekAgo) * 100;
+    const wUp = weekChange >= 0;
+    weekHTML = `
+      <div class="summary-box-value" style="color:${wUp ? 'var(--emerald-light)' : 'var(--red-light)'}">${wUp ? '+' : ''}${fmtNum(weekChange)}</div>
+      <div class="summary-box-sub">${fmtPct(weekPct)} · ر.س</div>`;
+  } else {
+    weekHTML = `<div class="summary-box-value" style="font-size:13px;color:var(--text-dim)">يُجمَع تدريجياً</div>
+      <div class="summary-box-sub" style="color:var(--text-dim)">افتح الموقع يومياً</div>`;
+  }
+  const summaryHTML = `
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        ملخّص الأداء
+      </div>
+      <div class="summary-grid">
+        <div class="summary-box">
+          <div class="summary-box-label">📊 اليوم</div>
+          <div class="summary-box-value" style="color:${dayUp ? 'var(--emerald-light)' : 'var(--red-light)'}">${dayUp ? '+' : ''}${fmtNum(totals.dayChangeSAR)}</div>
+          <div class="summary-box-sub">${fmtPct(totals.dayChangePct)} · ر.س</div>
+        </div>
+        <div class="summary-box">
+          <div class="summary-box-label">📅 آخر 7 أيام</div>
+          ${weekHTML}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Next earnings card
+  let nextEarn = null;
+  if (state.earningsData) {
+    Object.keys(state.earningsData).forEach(sym => {
+      const e = state.earningsData[sym];
+      if (e && e.date && (!nextEarn || e.date < nextEarn.date)) nextEarn = { symbol: sym, date: e.date };
+    });
+  }
+  let earningsHTML = '';
+  if (nextEarn) {
+    const dleft = daysUntil(nextEarn.date);
+    const holding = HOLDINGS.find(h => h.symbol === nextEarn.symbol);
+    earningsHTML = `
+      <div class="card" style="margin-top:16px;">
+        <div class="card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          تقويم الأرباح
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div>
+            <div style="font-weight:800;font-size:15px;">${nextEarn.symbol}</div>
+            <div style="font-size:12px;color:var(--text-muted);">${holding ? holding.nameAr : ''}</div>
+          </div>
+          <div style="text-align:left;">
+            <div style="font-weight:800;direction:ltr;">${nextEarn.date}</div>
+            <div style="font-size:12px;color:var(--amber);">${dleft >= 0 ? `إعلان الأرباح بعد ${dleft} يوم` : ''}</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:8px;">أقرب إعلان أرباح في محفظتك — أيام مهمة لتحرّك السهم.</div>
+      </div>
+    `;
+  }
+
   document.getElementById('tab-content').innerHTML = `
     <div class="fade-in">
       <div class="top-grid">
@@ -1528,7 +1804,10 @@ function renderOverview(data, totals) {
         ${card(topLoser.profit < 0 ? 'red' : 'amber', topLoser.profit < 0 ? 'أكبر خسارة' : 'أقل ربح', warnIcon, topLoser, fmtPct(topLoser.profitPct), `${topLoser.profit >= 0 ? '+' : ''}${fmtNum(topLoser.profitSAR)} ر.س`)}
       </div>
 
-      <div class="card" style="margin-top:24px;">
+      ${summaryHTML}
+      ${earningsHTML}
+
+      <div class="card" style="margin-top:16px;">
         <div class="card-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
           توزيع المحفظة حسب الأسهم
@@ -1603,8 +1882,18 @@ function renderPositions(data) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           جميع المراكز (${data.length})
         </div>
-        <span class="positions-hint">اضغط للتفاصيل</span>
+        <button class="add-btn" id="add-stock-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          إضافة سهم
+        </button>
       </div>
+      ${data.length === 0 ? `
+        <div class="card"><div class="empty-state">
+          <div style="font-size:32px;margin-bottom:8px;">📈</div>
+          <p style="font-weight:700;color:var(--text);margin-bottom:6px;">المحفظة فارغة</p>
+          <p>اضغط "إضافة سهم" لتبدأ بناء محفظتك.</p>
+        </div></div>
+      ` : ''}
       ${sorted.map(h => {
         const isProfit = h.profit >= 0;
         const expanded = state.expandedStock === h.symbol;
@@ -1673,6 +1962,21 @@ function renderPositions(data) {
                   <div class="detail-value" style="direction:rtl;text-align:right;">${h.sectorAr}</div>
                 </div>
                 `}
+                ${(() => {
+                  const e = state.earningsData && state.earningsData[h.symbol];
+                  if (!e) return '';
+                  const dleft = daysUntil(e.date);
+                  return `<div style="grid-column:1/-1;">
+                    <div class="detail-label">📅 إعلان الأرباح القادم</div>
+                    <div class="detail-value" style="direction:rtl;text-align:right;">${e.date} ${dleft >= 0 ? `(بعد ${dleft} يوم)` : ''}</div>
+                  </div>`;
+                })()}
+                <div style="grid-column:1/-1;display:flex;justify-content:flex-end;">
+                  <button class="add-btn" data-edit-stock="${h.symbol}" style="background:var(--bg-elevated);color:var(--text);">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+                    تعديل السهم
+                  </button>
+                </div>
               </div>
             ` : ''}
           </div>
@@ -1689,9 +1993,30 @@ function renderPositions(data) {
       renderPositions(getPortfolioData());
     });
   });
+  document.getElementById('add-stock-btn')?.addEventListener('click', () => {
+    openModal({ kind: 'stock', mode: 'add' });
+  });
+  document.querySelectorAll('[data-edit-stock]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sym = btn.dataset.editStock;
+      const h = HOLDINGS.find(x => x.symbol === sym);
+      if (h) openModal({ kind: 'stock', mode: 'edit', original: sym, data: h });
+    });
+  });
 }
 
 function renderSectors(data, totals) {
+  if (data.length === 0) {
+    document.getElementById('tab-content').innerHTML = `
+      <div class="fade-in card"><div class="empty-state">
+        <div style="font-size:36px;margin-bottom:10px;">🗂️</div>
+        <p style="font-weight:700;color:var(--text);">لا توجد قطاعات لعرضها</p>
+        <p>أضف أسهماً لمحفظتك أولاً.</p>
+      </div></div>
+    `;
+    return;
+  }
   const sectorData = getSectorData(data, totals.valueSAR);
 
   document.getElementById('tab-content').innerHTML = `
@@ -1790,6 +2115,16 @@ function renderSectors(data, totals) {
 }
 
 function renderPerformance(data) {
+  if (data.length === 0) {
+    document.getElementById('tab-content').innerHTML = `
+      <div class="fade-in card"><div class="empty-state">
+        <div style="font-size:36px;margin-bottom:10px;">📈</div>
+        <p style="font-weight:700;color:var(--text);">لا يوجد أداء لعرضه</p>
+        <p>أضف أسهماً لمحفظتك أولاً.</p>
+      </div></div>
+    `;
+    return;
+  }
   const sorted = [...data].sort((a, b) => b.profitPct - a.profitPct);
   const maxAbs = Math.max(...sorted.map(x => Math.abs(x.profitPct)));
 
@@ -2215,6 +2550,365 @@ function renderNews() {
   });
 }
 
+// ============ SNAPSHOTS (for daily/weekly summary) ============
+function recordSnapshot(valueSAR) {
+  if (!valueSAR || valueSAR <= 0) return;
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const raw = localStorage.getItem('portfolio_snapshots');
+    const snaps = raw ? JSON.parse(raw) : {};
+    snaps[today] = Math.round(valueSAR * 100) / 100;
+    const keys = Object.keys(snaps).sort();
+    while (keys.length > 70) { delete snaps[keys.shift()]; }
+    localStorage.setItem('portfolio_snapshots', JSON.stringify(snaps));
+  } catch (e) {}
+}
+function getSnapshotDaysAgo(daysAgo) {
+  try {
+    const raw = localStorage.getItem('portfolio_snapshots');
+    if (!raw) return null;
+    const snaps = JSON.parse(raw);
+    const d = new Date();
+    d.setDate(d.getDate() - daysAgo);
+    const target = d.toISOString().split('T')[0];
+    if (snaps[target] != null) return snaps[target];
+    // nearest snapshot on or before the target date
+    const keys = Object.keys(snaps).sort();
+    let best = null;
+    for (const k of keys) { if (k <= target) best = snaps[k]; }
+    return best;
+  } catch (e) { return null; }
+}
+
+// ============ STOCK CRUD ============
+function upsertStock(data, originalSymbol) {
+  const idx = originalSymbol ? HOLDINGS.findIndex(h => h.symbol === originalSymbol) : -1;
+  const entry = {
+    symbol: data.symbol,
+    name: data.nameAr || data.symbol,
+    nameAr: data.nameAr || data.symbol,
+    shares: data.shares,
+    costBasisUSD: data.costBasisUSD,
+    initialValueUSD: idx >= 0 ? HOLDINGS[idx].initialValueUSD : data.costBasisUSD,
+    sectorAr: data.sectorAr,
+    sectorColor: data.sectorColor,
+  };
+  if (idx >= 0) HOLDINGS[idx] = entry;
+  else HOLDINGS.push(entry);
+  saveHoldings();
+}
+function deleteStock(symbol) {
+  HOLDINGS = HOLDINGS.filter(h => h.symbol !== symbol);
+  saveHoldings();
+}
+
+// ============ ASSET CRUD ============
+function upsertAsset(data, id) {
+  if (id) {
+    const idx = state.assets.findIndex(a => a.id === id);
+    if (idx >= 0) state.assets[idx] = { ...state.assets[idx], ...data };
+  } else {
+    state.assets.push({ id: 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), ...data });
+  }
+  saveAssets();
+}
+function deleteAsset(id) {
+  state.assets = state.assets.filter(a => a.id !== id);
+  saveAssets();
+}
+
+// ============ EARNINGS ============
+async function loadEarnings() {
+  if (!state.apiKey || state.earningsLoading) return;
+  state.earningsLoading = true;
+  const today = new Date();
+  const to = new Date(); to.setDate(to.getDate() + 110);
+  const fmt = d => d.toISOString().split('T')[0];
+  const todayStr = fmt(today);
+  const result = {};
+  await Promise.all(HOLDINGS.map(async (h) => {
+    try {
+      const res = await fetch(`https://finnhub.io/api/v1/calendar/earnings?from=${todayStr}&to=${fmt(to)}&symbol=${h.symbol}&token=${state.apiKey.trim()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      const list = (data.earningsCalendar || [])
+        .filter(e => e.date && e.date >= todayStr)
+        .sort((a, b) => a.date.localeCompare(b.date));
+      if (list.length) result[h.symbol] = list[0];
+    } catch (e) {}
+  }));
+  state.earningsData = result;
+  state.earningsLoading = false;
+  render();
+}
+
+function daysUntil(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  return Math.round((d - now) / 86400000);
+}
+
+// ============ MODAL ============
+function openModal(config) { state.modal = config; renderModal(); }
+function closeModal() { state.modal = null; document.getElementById('modal-root').innerHTML = ''; }
+
+function renderModal() {
+  const root = document.getElementById('modal-root');
+  if (!state.modal) { root.innerHTML = ''; return; }
+  const m = state.modal;
+  root.innerHTML = (m.kind === 'stock') ? stockModalHTML(m) : assetModalHTML(m);
+
+  // Close on overlay click
+  const overlay = root.querySelector('.modal-overlay');
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+  root.querySelector('#modal-close')?.addEventListener('click', closeModal);
+  root.querySelector('#modal-cancel')?.addEventListener('click', closeModal);
+
+  if (m.kind === 'stock') {
+    root.querySelector('#modal-save').addEventListener('click', () => {
+      const symbol = root.querySelector('#f-symbol').value.trim().toUpperCase();
+      const nameAr = root.querySelector('#f-name').value.trim();
+      const shares = parseFloat(root.querySelector('#f-shares').value);
+      const costSAR = parseFloat(root.querySelector('#f-cost').value);
+      const sectorName = root.querySelector('#f-sector').value;
+      const err = root.querySelector('#modal-error');
+      if (!symbol) { err.textContent = 'أدخل رمز السهم'; return; }
+      if (!shares || shares <= 0) { err.textContent = 'أدخل كمية صحيحة'; return; }
+      if (!costSAR || costSAR <= 0) { err.textContent = 'أدخل التكلفة بالريال'; return; }
+      // Duplicate check (only when adding or changing symbol)
+      if (symbol !== m.original && HOLDINGS.some(h => h.symbol === symbol)) {
+        err.textContent = 'هذا الرمز موجود بالفعل'; return;
+      }
+      const preset = SECTOR_PRESETS.find(s => s.name === sectorName) || SECTOR_PRESETS[SECTOR_PRESETS.length - 1];
+      upsertStock({
+        symbol, nameAr,
+        shares,
+        costBasisUSD: costSAR / USD_TO_SAR,
+        sectorAr: preset.name,
+        sectorColor: preset.color,
+      }, m.original);
+      closeModal();
+      state.livePrices = {}; // force fresh fetch incl. new symbol
+      render();
+      refreshPrices();
+    });
+    if (m.mode === 'edit') {
+      root.querySelector('#modal-delete')?.addEventListener('click', () => {
+        if (confirm('حذف هذا السهم من المحفظة؟')) {
+          deleteStock(m.original);
+          closeModal();
+          render();
+        }
+      });
+    }
+  } else {
+    root.querySelector('#modal-save').addEventListener('click', () => {
+      const type = root.querySelector('#f-type').value;
+      const name = root.querySelector('#f-aname').value.trim();
+      const valueSAR = parseFloat(root.querySelector('#f-avalue').value);
+      const note = root.querySelector('#f-anote').value.trim();
+      const err = root.querySelector('#modal-error');
+      if (!name) { err.textContent = 'أدخل اسم الأصل'; return; }
+      if (!valueSAR || valueSAR < 0) { err.textContent = 'أدخل القيمة بالريال'; return; }
+      upsertAsset({ type, name, valueSAR, note }, m.id);
+      closeModal();
+      render();
+    });
+    if (m.mode === 'edit') {
+      root.querySelector('#modal-delete')?.addEventListener('click', () => {
+        if (confirm('حذف هذا الأصل؟')) {
+          deleteAsset(m.id);
+          closeModal();
+          render();
+        }
+      });
+    }
+  }
+}
+
+function stockModalHTML(m) {
+  const d = m.data || {};
+  const costSAR = d.costBasisUSD ? (d.costBasisUSD * USD_TO_SAR).toFixed(2) : '';
+  return `
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">${m.mode === 'edit' ? 'تعديل سهم' : 'إضافة سهم'}</div>
+          <button class="row-action" id="modal-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">رمز السهم</div>
+          <input id="f-symbol" class="modal-input ltr" placeholder="AAPL" value="${d.symbol || ''}" autocapitalize="characters" />
+          <div class="modal-hint">الرمز كما في السوق الأمريكي (مثل NVDA، AAPL)</div>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">اسم الشركة (اختياري)</div>
+          <input id="f-name" class="modal-input" placeholder="مثال: آبل" value="${(d.nameAr || '').replace(/"/g, '&quot;')}" />
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">الكمية (عدد الأسهم)</div>
+          <input id="f-shares" class="modal-input ltr" type="number" step="any" placeholder="1.5" value="${d.shares ?? ''}" />
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">إجمالي التكلفة (بالريال)</div>
+          <input id="f-cost" class="modal-input ltr" type="number" step="any" placeholder="1000" value="${costSAR}" />
+          <div class="modal-hint">المبلغ الكلي اللي دفعته لشراء هذي الكمية</div>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">القطاع</div>
+          <select id="f-sector" class="modal-select">
+            ${SECTOR_PRESETS.map(s => `<option value="${s.name}" ${d.sectorAr === s.name ? 'selected' : ''}>${s.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="modal-actions">
+          ${m.mode === 'edit' ? '<button class="modal-btn modal-btn-danger" id="modal-delete">حذف</button>' : ''}
+          <button class="modal-btn modal-btn-ghost" id="modal-cancel">إلغاء</button>
+          <button class="modal-btn modal-btn-primary" id="modal-save">${m.mode === 'edit' ? 'حفظ' : 'إضافة'}</button>
+        </div>
+        <div class="modal-error" id="modal-error"></div>
+      </div>
+    </div>
+  `;
+}
+
+function assetModalHTML(m) {
+  const d = m.data || {};
+  return `
+    <div class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">${m.mode === 'edit' ? 'تعديل أصل' : 'إضافة أصل'}</div>
+          <button class="row-action" id="modal-close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">نوع الأصل</div>
+          <select id="f-type" class="modal-select">
+            ${ASSET_TYPES.map(t => `<option value="${t.id}" ${d.type === t.id ? 'selected' : ''}>${t.icon} ${t.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">الاسم / الوصف</div>
+          <input id="f-aname" class="modal-input" placeholder="مثال: حساب التوفير - الراجحي" value="${(d.name || '').replace(/"/g, '&quot;')}" />
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">القيمة الحالية (بالريال)</div>
+          <input id="f-avalue" class="modal-input ltr" type="number" step="any" placeholder="50000" value="${d.valueSAR ?? ''}" />
+        </div>
+        <div class="modal-field">
+          <div class="modal-label">ملاحظة (اختياري)</div>
+          <input id="f-anote" class="modal-input" placeholder="أي تفاصيل تحب تضيفها" value="${(d.note || '').replace(/"/g, '&quot;')}" />
+        </div>
+        <div class="modal-actions">
+          ${m.mode === 'edit' ? '<button class="modal-btn modal-btn-danger" id="modal-delete">حذف</button>' : ''}
+          <button class="modal-btn modal-btn-ghost" id="modal-cancel">إلغاء</button>
+          <button class="modal-btn modal-btn-primary" id="modal-save">${m.mode === 'edit' ? 'حفظ' : 'إضافة'}</button>
+        </div>
+        <div class="modal-error" id="modal-error"></div>
+      </div>
+    </div>
+  `;
+}
+
+// ============ WEALTH TAB ============
+function renderWealth(stocksTotalSAR) {
+  const assets = state.assets;
+  const assetsTotal = assets.reduce((s, a) => s + (a.valueSAR || 0), 0);
+  const netWorth = stocksTotalSAR + assetsTotal;
+
+  // Group assets by type
+  const groups = {};
+  assets.forEach(a => {
+    if (!groups[a.type]) groups[a.type] = [];
+    groups[a.type].push(a);
+  });
+
+  let groupsHTML = '';
+  ASSET_TYPES.forEach(t => {
+    const items = groups[t.id];
+    if (!items || items.length === 0) return;
+    const subtotal = items.reduce((s, a) => s + (a.valueSAR || 0), 0);
+    groupsHTML += `
+      <div class="asset-group-head">
+        <span>${t.icon}</span>
+        <span>${t.label}</span>
+        <span style="color:var(--text-dim);font-weight:600;font-size:12px;">· ${fmtNum(subtotal)} ر.س</span>
+      </div>
+      ${items.map(a => `
+        <div class="asset-row">
+          <div class="asset-info">
+            <div class="asset-name">${(a.name || '').replace(/</g, '&lt;')}</div>
+            ${a.note ? `<div class="asset-note">${(a.note || '').replace(/</g, '&lt;')}</div>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="asset-value">${fmtNum(a.valueSAR)} ر.س</span>
+            <div class="row-actions">
+              <button class="row-action" data-edit-asset="${a.id}" title="تعديل">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    `;
+  });
+
+  const sectorShare = netWorth > 0 ? (stocksTotalSAR / netWorth) * 100 : 0;
+  const assetShare = netWorth > 0 ? (assetsTotal / netWorth) * 100 : 0;
+
+  document.getElementById('tab-content').innerHTML = `
+    <div class="fade-in">
+      <div class="card">
+        <div class="wealth-net">
+          <div class="wealth-net-label">إجمالي الثروة (صافي القيمة)</div>
+          <div class="wealth-net-value">${fmtNum(netWorth)} <span style="font-size:0.5em;">ر.س</span></div>
+        </div>
+        <div class="wealth-split">
+          <div class="wealth-split-item">
+            <div style="font-size:11px;color:var(--text-dim);">📈 أسهم أمريكية</div>
+            <div style="font-weight:800;direction:ltr;margin-top:3px;">${fmtNum(stocksTotalSAR)} ر.س</div>
+            <div style="font-size:11px;color:var(--text-muted);direction:ltr;">${sectorShare.toFixed(1)}%</div>
+          </div>
+          <div class="wealth-split-item">
+            <div style="font-size:11px;color:var(--text-dim);">🏦 أصول أخرى</div>
+            <div style="font-weight:800;direction:ltr;margin-top:3px;">${fmtNum(assetsTotal)} ر.س</div>
+            <div style="font-size:11px;color:var(--text-muted);direction:ltr;">${assetShare.toFixed(1)}%</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin:18px 4px 4px;">
+        <div style="font-weight:700;font-size:15px;">أصولي الأخرى</div>
+        <button class="add-btn" id="add-asset-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          إضافة أصل
+        </button>
+      </div>
+
+      ${assets.length === 0
+        ? `<div class="card"><div class="empty-state">
+             <div style="font-size:32px;margin-bottom:8px;">🏦</div>
+             <p style="font-weight:700;color:var(--text);margin-bottom:6px;">ما أضفت أي أصول بعد</p>
+             <p>أضف نقدك وعقارك وصكوكك وصناديقك لتشوف صافي ثروتك كامل.</p>
+           </div></div>`
+        : groupsHTML}
+
+      <div style="margin-top:14px;padding:10px 14px;border-radius:12px;background:var(--bg-elevated);border:1px solid var(--border);font-size:12px;color:var(--text-muted);">
+        ℹ️ القيم هنا تُدخل يدوياً — حدّثها كل ما تغيّرت قيمة أصولك. بياناتك محفوظة على جهازك فقط.
+      </div>
+    </div>
+  `;
+
+  document.getElementById('add-asset-btn')?.addEventListener('click', () => {
+    openModal({ kind: 'asset', mode: 'add' });
+  });
+  document.querySelectorAll('[data-edit-asset]').forEach(b => {
+    b.addEventListener('click', () => {
+      const asset = state.assets.find(a => a.id === b.dataset.editAsset);
+      if (asset) openModal({ kind: 'asset', mode: 'edit', id: asset.id, data: asset });
+    });
+  });
+}
+
 function renderTabs() {
   document.querySelectorAll('.tab').forEach(t => {
     t.classList.toggle('active', t.dataset.tab === state.activeTab);
@@ -2230,6 +2924,11 @@ function render() {
   const isProfit = totals.profitUSD >= 0;
   const isDayUp = totals.dayChangeUSD >= 0;
 
+  // Save a daily snapshot of portfolio value (for weekly summary)
+  if (!state.loading && Object.keys(state.livePrices).length > 0) {
+    recordSnapshot(totals.valueSAR);
+  }
+
   renderHero(totals, isProfit, isDayUp);
   renderTabs();
 
@@ -2239,6 +2938,7 @@ function render() {
     case 'sectors': renderSectors(data, totals); break;
     case 'performance': renderPerformance(data); break;
     case 'sp500': renderSP500(); break;
+    case 'wealth': renderWealth(totals.valueSAR); break;
     case 'news': renderNews(); break;
   }
 }
@@ -2255,6 +2955,10 @@ document.querySelectorAll('.tab').forEach(t => {
     }
     if (state.activeTab === 'news' && !state.newsData && !state.newsLoading && state.apiKey) {
       loadNews();
+    }
+    if ((state.activeTab === 'overview' || state.activeTab === 'positions')
+        && !state.earningsData && !state.earningsLoading && state.apiKey) {
+      loadEarnings();
     }
   });
 });
@@ -2284,10 +2988,12 @@ document.getElementById('save-key-btn').addEventListener('click', () => {
   try { localStorage.setItem('finnhub_api_key', key); } catch (e) {}
   state.showSettings = false;
   document.getElementById('settings-panel').classList.add('hidden');
-  // Reset news to force reload with new key
+  // Reset news & earnings to force reload with new key
   state.newsData = null;
+  state.earningsData = null;
   refreshPrices();
   if (state.activeTab === 'news') loadNews();
+  if (key) loadEarnings();
 });
 
 // ============ PWA SETUP ============
@@ -2416,7 +3122,7 @@ document.getElementById('save-key-btn').addEventListener('click', () => {
 })();
 
 // ============ LOCK SCREEN ============
-const SITE_PASSWORD = 'WA-66';
+const SITE_PASSWORD = 'WS2@@6';
 
 // Normalize input so Arabic/Persian digits, dash variants, spaces, and
 // case differences don't block a correct password.
@@ -2505,6 +3211,11 @@ setupLockScreen();
 render();
 refreshPrices();
 setInterval(refreshPrices, REFRESH_MS);
+
+// Load earnings calendar in the background (needs Finnhub key)
+if (state.apiKey) {
+  setTimeout(loadEarnings, 1500);
+}
 </script>
 
 </body>
